@@ -1,6 +1,7 @@
 package addictgo
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -167,6 +168,11 @@ func (a *API) Other(app *fiber.App) {
 		// res.send({online: true, uptime});
 
 		return c.JSON(map[string]interface{}{"data": "status"})
+	})
+
+	app.Get("/stack", func(c *fiber.Ctx) error {
+		data, _ := json.MarshalIndent(app.Stack(), "", " ")
+		return c.Send(data)
 	})
 
 	// Get Prometheus Stats

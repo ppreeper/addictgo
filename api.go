@@ -9,13 +9,13 @@ import (
 	"github.com/ppreeper/pad"
 )
 
-//LDAP
+// LDAP
 
 // func unmarshalSearchResult(sr []*ldap.Entry) {
 // 	fmt.Println(sr)
 // }
 
-//API configuration stuct
+// API configuration stuct
 type API struct {
 	URL      string
 	Username string
@@ -29,7 +29,7 @@ func (a *API) HostPort() string {
 	return ":" + a.Port
 }
 
-//Dial connect LDAP server
+// Dial connect LDAP server
 func (a *API) Dial() (*ldap.Conn, error) {
 	l, err := ldap.DialURL(a.URL)
 	if err != nil {
@@ -39,7 +39,7 @@ func (a *API) Dial() (*ldap.Conn, error) {
 	return l, err
 }
 
-//Bind to LDAP server
+// Bind to LDAP server
 func (a *API) Bind(conn *ldap.Conn, user, pass string) error {
 	err := conn.Bind(user, pass)
 	return err
@@ -63,7 +63,7 @@ type LDAPArgs struct {
 	Q      string `query:"q"`
 }
 
-//Search search ldap based on filter and attributes
+// Search search ldap based on filter and attributes
 func (a *API) Search(filter string, args *LDAPArgs) map[string]interface{} {
 	fmt.Println(args)
 	var attributes []string
@@ -117,18 +117,18 @@ func (a *API) Search(filter string, args *LDAPArgs) map[string]interface{} {
 	for k, e := range sr.Entries {
 		if k >= start {
 			if k < end {
-				//fmt.Println(e)
-				//e.PrettyPrint(2)
-				//fmt.Println(len(e.Attributes))
+				// fmt.Println(e)
+				// e.PrettyPrint(2)
+				// fmt.Println(len(e.Attributes))
 				if len(e.Attributes) > 0 {
 					m := make(map[string]interface{})
 					for _, attr := range e.Attributes {
 						if len(attr.Values) == 1 {
 							m[attr.Name] = attr.Values[0]
-							//dd = append(dd, m)
+							// dd = append(dd, m)
 						} else if len(attr.Values) > 1 {
 							m[attr.Name] = attr.Values
-							//dd = append(dd, m)
+							// dd = append(dd, m)
 						}
 					}
 					dd = append(dd, m)
@@ -137,7 +137,7 @@ func (a *API) Search(filter string, args *LDAPArgs) map[string]interface{} {
 		}
 	}
 	d["data"] = dd
-	//fmt.Println(d)
+	// fmt.Println(d)
 	return d
 }
 
@@ -171,7 +171,7 @@ func (a *API) UserDN(user string) (dn string) {
 	return
 }
 
-//GetScope uses bind username to determine basic domain scope
+// GetScope uses bind username to determine basic domain scope
 func GetScope(bindUser string) (scope string) {
 	domain := strings.Split(strings.Split(bindUser, "@")[1], ".")
 	for _, v := range domain {
