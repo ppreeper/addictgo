@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
+	"github.com/ppreeper/addictgo/api"
 )
 
 func basicAnswer(c *fiber.Ctx) error {
@@ -12,7 +13,7 @@ func basicAnswer(c *fiber.Ctx) error {
 func Other(app *fiber.App) {
 	app.Get("/other", basicAnswer)
 	app.Get("/all", basicAnswer)
-	app.Get("/find/:filter", basicAnswer)
+	app.Get("/find/:filter", api.FindFilterGet)
 	app.Get("/status", basicAnswer)
 	app.Get("/stack", basicAnswer)
 	app.Get("/monitor", monitor.New(monitor.Config{Title: "ADDict Metrics Page"}))
@@ -25,8 +26,8 @@ func OU(app *fiber.App) {
 	app.Get("/ou/:ou", basicAnswer)
 	app.Delete("/ou/:ou", basicAnswer)
 	app.Get("/ou/:ou/exists", basicAnswer)
-
 }
+
 func Group(app *fiber.App) {
 	app.Get("/group", basicAnswer)
 	app.Post("/group", basicAnswer)
@@ -36,6 +37,7 @@ func Group(app *fiber.App) {
 	app.Post("/group/:group/user/:user", basicAnswer)
 	app.Delete("/group/:group/user/:user", basicAnswer)
 }
+
 func User(app *fiber.App) {
 	app.Get("/user", basicAnswer)
 	app.Get("/user", basicAnswer)

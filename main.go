@@ -7,12 +7,25 @@ import (
 	"os"
 	"strconv"
 
+	_ "github.com/ppreeper/addictgo/docs"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/swagger"
 	"github.com/ppreeper/addictgo/ldap"
 )
 
+// @title AD Dict API
+// @version 1.0
+// @description This is the swagger spec for AD Dict
+// @termsOfService http://preeper.org/addict/
+// @contact.name Peter Preeper
+// @contact.email ppreeper@gmail.com
+// @license.name AGPL-3
+// @license.url https://www.gnu.org/licenses/agpl-3.0.html
+// @host localhost:3001
+// @BasePath /
 func main() {
 	var l ldap.LDAP
 	flag.StringVar(&l.URL, "url", LookupEnvOrString("ADDICT_URL", ""), "Address for Active Directory")
@@ -37,15 +50,14 @@ func main() {
 
 	fmt.Println(encodePassword("p4ssw04d"))
 
-	Other(app)
+	app.Get("/swagger/*", swagger.HandlerDefault)
 	OU(app)
 	Group(app)
 	User(app)
-	// a.OU(app)
-	// a.Group(app)
-	// a.User(app)
+	Other(app)
 
 	app.Listen(l.HostPort())
+	// app.ListenTLS(l.HostPort(), "cert.pem", "key.pem")
 }
 
 // LookupEnvOrString provides 12 Factor for string vars
@@ -73,7 +85,7 @@ func encodePassword(password string) string {
 	password = "\"" + password + "\""
 	pbyte := []rune(password)
 	for i := 0; i < len(password); i++ {
-		fmt.Println(pbyte[i]&0xFF, (pbyte[i]>>8)&0xFF)
+		fmt.Println(pbyte[i], pbyte[i]&0xFF)
 		newPassword += string(pbyte[i] & 0xFF)
 	}
 	return newPassword

@@ -1,172 +1,162 @@
-package addictgo
+package api
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/ppreeper/addictgo/ldap"
 )
 
-func (a *API) OU(app *fiber.App) {
-	// Get all OUs
-	// GET /ou
-	// Pulls all Organization Units in Active Directory, with filters.
-	app.Get("/ou", func(c *fiber.Ctx) error {
-		qp := new(LDAPArgs)
-		if err := c.QueryParser(qp); err != nil {
-			return err
-		}
+// @Summary Get all OUs
+// @Description Pulls all Organization Units in Active Directory, with filters
+// @Tags ou
+// @Accept plain
+// @Param _fields query []string false "Comma-delimited field names to return"
+// @Param _q query []string false "Searches all fields for given string"
+// @Param _start query int false "Result Index to start from"
+// @Param _end query int false "Result Index to end to"
+// @Produce json
+// @Success 200 "OK"
+// @Router /ou [get]
+func OUGet(c *fiber.Ctx) error {
+	qp := new(ldap.LDAPArgs)
+	if err := c.QueryParser(qp); err != nil {
+		return err
+	}
 
-		// var attributes []string
-		// filter := "(objectClass=organizationalUnit)"
+	// var attributes []string
+	// filter := "(objectClass=organizationalUnit)"
 
-		// fields := strings.Split(c.Query("_fields"), ",")
-		// if len(c.Query("_fields")) > 0 {
-		// 	for _, a := range fields {
-		// 		attributes = append(attributes, a)
-		// 	}
-		// }
+	// fields := strings.Split(c.Query("_fields"), ",")
+	// if len(c.Query("_fields")) > 0 {
+	// 	for _, a := range fields {
+	// 		attributes = append(attributes, a)
+	// 	}
+	// }
 
-		// q := c.Query("_q")
-		// start := c.Query("_start")
-		// end := c.Query("_end")
-		// fmt.Println(c.Params("user"), fields, q, start, end)
+	// q := c.Query("_q")
+	// start := c.Query("_start")
+	// end := c.Query("_end")
+	// fmt.Println(c.Params("user"), fields, q, start, end)
 
-		// sr := a.Search(filter, attributes)
-		// c.JSON(sr)
+	// sr := a.Search(filter, attributes)
+	// c.JSON(sr)
 
-		// Javascript
-		// const filters = api.parseQuery(req.query);
-		// let [error, response] = await wrapAsync(ad.ou().get(filters));
-		// respond(res, error, response);
+	// Javascript
+	// const filters = api.parseQuery(req.query);
+	// let [error, response] = await wrapAsync(ad.ou().get(filters));
+	// respond(res, error, response);
 
-		return c.JSON(map[string]interface{}{"data": "sr"})
-	})
+	return c.JSON(map[string]interface{}{"data": "sr"})
+}
 
-	app.Post("/ou", func(c *fiber.Ctx) error {
-		// Add an OU
-		// POST /ou
-		// Adds a new OU to Active Directory
-		// Request Body
-		// name			Name of the OU as displayed
-		// Optional
-		// description	Descripton of the OU
-		// location		Relative AD Position separated by /
+// @Summary Add an OU
+// @Description Adds a new OU to Active Directory
+// @Tags ou
+// @Accept plain
+// @Param name body string true "Name of the OU as displayed"
+// @Param description body string false "Descripton of the OU"
+// @Param location body string false "Relative AD Position separated by /"
+// @Produce json
+// @Success 201 "Created"
+// @Router /ou [post]
+func OUPost(c *fiber.Ctx) error {
+	// queries:
+	// 	name:
+	// 	description: "Name of the OU as displayed."
+	// 	optional: false
+	// 	description: "Description of the OU."
+	// 	location: "Relative AD position, separated by /."
 
-		// queries: {
-		// 		"name": {
-		// 				description: 'Name of the OU as displayed.',
-		// 				optional: false
-		// 		},
-		// 		"description": "Description of the OU.",
-		// 		"location": "Relative AD position, separated by /.",
-		// }
+	// Javascript
+	// let [error, response] = await wrapAsync(ad.ou().add(req.body));
+	// respond(res, error, response);
 
-		// queries:
-		// 	name:
-		// 	description: "Name of the OU as displayed."
-		// 	optional: false
-		// 	description: "Description of the OU."
-		// 	location: "Relative AD position, separated by /."
+	return c.JSON(map[string]interface{}{"data": "OU"})
+}
 
-		// Javascript
-		// let [error, response] = await wrapAsync(ad.ou().add(req.body));
-		// respond(res, error, response);
+// @Summary Get a single OU
+// @Description Pulls a single OU
+// @Tags ou
+// @Accept plain
+// @Param ou path string true "The OU name"
+// @Param _fields query []string false "Comma-delimited field names to return"
+// @Param _q query []string false "Searches all fields for given string"
+// @Param _start query int false "Result Index to start from"
+// @Param _end query int false "Result Index to end to"
+// @Produce json
+// @Success 200 "OK"
+// @Router /ou/{ou} [get]
+func OUOUGet(c *fiber.Ctx) error {
+	// var attributes []string
+	// filter := fmt.Sprintf("(&(objectClass=organizationalUnit)(name=%s))", c.Params("ou"))
 
-		return c.JSON(map[string]interface{}{"data": "OU"})
-	})
+	// fields := strings.Split(c.Query("_fields"), ",")
+	// if len(c.Query("_fields")) > 0 {
+	// 	for _, a := range fields {
+	// 		attributes = append(attributes, a)
+	// 	}
+	// }
 
-	app.Get("/ou/:ou", func(c *fiber.Ctx) error {
-		// Get a single OU
-		// GET /ou/:ou
-		// Pulls a single OU
-		// URL Parameters
-		// ou		The OU name
-		// Query Parameters
-		// _fields	Comma-delimited field names to return
-		// _q		Searches all fields for given string
-		// _start	Result Index to start from
-		// _end		Result Index to end to
+	// q := c.Query("_q")
+	// start := c.Query("_start")
+	// end := c.Query("_end")
+	// fmt.Println(c.Params("user"), fields, q, start, end)
 
-		// params: {ou: params.ou},
-		// queries: filterQuery
+	// sr := svr.Search(filter, attributes)
+	// c.JSON(sr)
 
-		// parameters:
-		// 	ou: params.ou
-		// 	queries: filterQuery
+	// Javascript
+	// let ou = req.params.ou;
+	// const filters = api.parseQuery(req.query);
+	// let [error, response] = await wrapAsync(ad.ou(ou).get(filters));
+	// respond(res, error, response);
 
-		// var attributes []string
-		// filter := fmt.Sprintf("(&(objectClass=organizationalUnit)(name=%s))", c.Params("ou"))
+	return c.JSON(map[string]interface{}{"data": "OU"})
+}
 
-		// fields := strings.Split(c.Query("_fields"), ",")
-		// if len(c.Query("_fields")) > 0 {
-		// 	for _, a := range fields {
-		// 		attributes = append(attributes, a)
-		// 	}
-		// }
+// @Summary Remove an OU
+// @Description Removes the OU from Active Directory
+// @Tags ou
+// @Accept plain
+// @Param ou path string true "The OU name"
+// @Produce json
+// @Success 200 "OK"
+// @Router /ou/{ou} [delete]
+func OUOUDelete(c *fiber.Ctx) error {
+	// Javascript
+	// const ou = req.params.ou;
+	// let [error, response] = await wrapAsync(ad.ou(ou).remove());
+	// respond(res, error, response);
 
-		// q := c.Query("_q")
-		// start := c.Query("_start")
-		// end := c.Query("_end")
-		// fmt.Println(c.Params("user"), fields, q, start, end)
+	return c.JSON(map[string]interface{}{"data": "OU"})
+}
 
-		// sr := svr.Search(filter, attributes)
-		// c.JSON(sr)
+// @Summary OU exists
+// @Description Returns whether a OU exists or not
+// @Tags ou
+// @Accept plain
+// @Param ou path string true "The OU name"
+// @Produce json
+// @Success 200 "OK"
+// @Router /ou/{ou}/exists [get]
+func OUOUExists(c *fiber.Ctx) error {
+	// parameters:
+	// 	ou: params.ou
 
-		// Javascript
-		// let ou = req.params.ou;
-		// const filters = api.parseQuery(req.query);
-		// let [error, response] = await wrapAsync(ad.ou(ou).get(filters));
-		// respond(res, error, response);
+	// var attributes []string
+	// filter := fmt.Sprintf("(&(objectClass=organizationalUnit)(name=%s))", c.Params("ou"))
+	// d := map[string]bool{"data": false}
 
-		return c.JSON(map[string]interface{}{"data": "OU"})
-	})
+	// sr := svr.Search(filter, attributes)
+	// if len(sr) != 0 {
+	// 	d["data"] = true
+	// }
 
-	app.Delete("/ou/:ou", func(c *fiber.Ctx) error {
-		// Remove an OU
-		// DELETE /ou/:ou
-		// Removes the OU from Active Directory.
-		// URL Parameters
-		// ou		The OU name
+	// c.JSON(d)
 
-		// params: {ou: params.ou},
+	// Javascript
+	// const ou = req.params.ou;
+	// let [error, response] = await wrapAsync(ad.ou(ou).exists());
+	// respond(res, error, response);
 
-		// parameters:
-		// 	ou: params.ou
-
-		// Javascript
-		// const ou = req.params.ou;
-		// let [error, response] = await wrapAsync(ad.ou(ou).remove());
-		// respond(res, error, response);
-
-		return c.JSON(map[string]interface{}{"data": "OU"})
-	})
-
-	app.Get("/ou/:ou/exists", func(c *fiber.Ctx) error {
-		// OU exists
-		// GET /ou/:ou/exists
-		// Returns whether a OU exists or not
-		// URL Parameters
-		// ou		The OU name
-
-		// params: {ou: params.ou},
-
-		// parameters:
-		// 	ou: params.ou
-
-		// var attributes []string
-		// filter := fmt.Sprintf("(&(objectClass=organizationalUnit)(name=%s))", c.Params("ou"))
-		// d := map[string]bool{"data": false}
-
-		// sr := svr.Search(filter, attributes)
-		// if len(sr) != 0 {
-		// 	d["data"] = true
-		// }
-
-		// c.JSON(d)
-
-		// Javascript
-		// const ou = req.params.ou;
-		// let [error, response] = await wrapAsync(ad.ou(ou).exists());
-		// respond(res, error, response);
-
-		return c.JSON(map[string]interface{}{"data": "OU"})
-	})
+	return c.JSON(map[string]interface{}{"data": "OU"})
 }

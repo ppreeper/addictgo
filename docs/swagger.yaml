@@ -1,4 +1,845 @@
+basePath: /
+host: localhost:3001
 info:
-  contact: {}
-paths: {}
+  contact:
+    email: ppreeper@gmail.com
+    name: Peter Preeper
+  description: This is the swagger spec for AD Dict
+  license:
+    name: AGPL-3
+    url: https://www.gnu.org/licenses/agpl-3.0.html
+  termsOfService: http://preeper.org/addict/
+  title: AD Dict API
+  version: "1.0"
+paths:
+  /all:
+    get:
+      consumes:
+      - text/plain
+      description: Pulls all Active Directory objects
+      parameters:
+      - collectionFormat: csv
+        description: Comma-delimited field names to return
+        in: query
+        items:
+          type: string
+        name: _fields
+        type: array
+      - collectionFormat: csv
+        description: Searches all fields for given string
+        in: query
+        items:
+          type: string
+        name: _q
+        type: array
+      - description: Result Index to start from
+        in: query
+        name: _start
+        type: integer
+      - description: Result Index to end to
+        in: query
+        name: _end
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get all objects
+      tags:
+      - other
+  /find/{filter}:
+    get:
+      consumes:
+      - text/plain
+      description: Does a raw Active Directory search
+      parameters:
+      - description: Search filter
+        in: path
+        name: filter
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Search Active Directory
+      tags:
+      - other
+  /group:
+    get:
+      consumes:
+      - text/plain
+      description: Pulls all groups in Active Directory, with filters.
+      parameters:
+      - collectionFormat: csv
+        description: Comma-delimited field names to return
+        in: query
+        items:
+          type: string
+        name: _fields
+        type: array
+      - collectionFormat: csv
+        description: Searches all fields for given string
+        in: query
+        items:
+          type: string
+        name: _q
+        type: array
+      - description: Result Index to start from
+        in: query
+        name: _start
+        type: integer
+      - description: Result Index to end to
+        in: query
+        name: _end
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get all groups
+      tags:
+      - group
+    post:
+      consumes:
+      - text/plain
+      description: Adds a new group to Active Directory
+      parameters:
+      - description: Name of the group as displayed
+        in: body
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Descripton of the group
+        in: body
+        name: description
+        schema:
+          type: string
+      - description: Relative AD Position separated by /
+        in: body
+        name: location
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+      summary: Add a group
+      tags:
+      - group
+  /group/{group}:
+    delete:
+      consumes:
+      - text/plain
+      description: Removes a group from Active Directory
+      parameters:
+      - description: The group name
+        in: path
+        name: group
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Remove a group
+      tags:
+      - group
+    get:
+      consumes:
+      - text/plain
+      description: Pulls a single group
+      parameters:
+      - description: The group name
+        in: path
+        name: group
+        required: true
+        type: string
+      - collectionFormat: csv
+        description: Comma-delimited field names to return
+        in: query
+        items:
+          type: string
+        name: _fields
+        type: array
+      - collectionFormat: csv
+        description: Searches all fields for given string
+        in: query
+        items:
+          type: string
+        name: _q
+        type: array
+      - description: Result Index to start from
+        in: query
+        name: _start
+        type: integer
+      - description: Result Index to end to
+        in: query
+        name: _end
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get a single group
+      tags:
+      - group
+  /group/{group}/exists:
+    get:
+      consumes:
+      - text/plain
+      description: Returns whether a group exists or not
+      parameters:
+      - description: The group name
+        in: path
+        name: group
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Group exists
+      tags:
+      - group
+  /group/{group}/user/{user}:
+    delete:
+      consumes:
+      - text/plain
+      description: Removes a user from a group
+      parameters:
+      - description: The group name
+        in: path
+        name: group
+        required: true
+        type: string
+      - description: The user logon name
+        in: path
+        name: user
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Remove user from group
+      tags:
+      - group
+    post:
+      consumes:
+      - text/plain
+      description: Adds a user to a group
+      parameters:
+      - description: The group name
+        in: path
+        name: group
+        required: true
+        type: string
+      - description: The user logon name
+        in: path
+        name: user
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Add user to group
+      tags:
+      - group
+  /other:
+    get:
+      description: Pulls all non-user/group Active Directory objects
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get all other objects
+      tags:
+      - other
+  /ou:
+    get:
+      consumes:
+      - text/plain
+      description: Pulls all Organization Units in Active Directory, with filters
+      parameters:
+      - collectionFormat: csv
+        description: Comma-delimited field names to return
+        in: query
+        items:
+          type: string
+        name: _fields
+        type: array
+      - collectionFormat: csv
+        description: Searches all fields for given string
+        in: query
+        items:
+          type: string
+        name: _q
+        type: array
+      - description: Result Index to start from
+        in: query
+        name: _start
+        type: integer
+      - description: Result Index to end to
+        in: query
+        name: _end
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get all OUs
+      tags:
+      - ou
+    post:
+      consumes:
+      - text/plain
+      description: Adds a new OU to Active Directory
+      parameters:
+      - description: Name of the OU as displayed
+        in: body
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Descripton of the OU
+        in: body
+        name: description
+        schema:
+          type: string
+      - description: Relative AD Position separated by /
+        in: body
+        name: location
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+      summary: Add an OU
+      tags:
+      - ou
+  /ou/{ou}:
+    delete:
+      consumes:
+      - text/plain
+      description: Removes the OU from Active Directory
+      parameters:
+      - description: The OU name
+        in: path
+        name: ou
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Remove an OU
+      tags:
+      - ou
+    get:
+      consumes:
+      - text/plain
+      description: Pulls a single OU
+      parameters:
+      - description: The OU name
+        in: path
+        name: ou
+        required: true
+        type: string
+      - collectionFormat: csv
+        description: Comma-delimited field names to return
+        in: query
+        items:
+          type: string
+        name: _fields
+        type: array
+      - collectionFormat: csv
+        description: Searches all fields for given string
+        in: query
+        items:
+          type: string
+        name: _q
+        type: array
+      - description: Result Index to start from
+        in: query
+        name: _start
+        type: integer
+      - description: Result Index to end to
+        in: query
+        name: _end
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get a single OU
+      tags:
+      - ou
+  /ou/{ou}/exists:
+    get:
+      consumes:
+      - text/plain
+      description: Returns whether a OU exists or not
+      parameters:
+      - description: The OU name
+        in: path
+        name: ou
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: OU exists
+      tags:
+      - ou
+  /status:
+    get:
+      description: Gives the uptime and status of the API
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get API status
+      tags:
+      - other
+  /user:
+    get:
+      consumes:
+      - text/plain
+      description: Pulls all users in Active Directory, with filters
+      parameters:
+      - collectionFormat: csv
+        description: Comma-delimited field names to return
+        in: query
+        items:
+          type: string
+        name: _fields
+        type: array
+      - collectionFormat: csv
+        description: Searches all fields for given string
+        in: query
+        items:
+          type: string
+        name: _q
+        type: array
+      - description: Result Index to start from
+        in: query
+        name: _start
+        type: integer
+      - description: Result Index to end to
+        in: query
+        name: _end
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get all users
+      tags:
+      - users
+    post:
+      consumes:
+      - text/plain
+      description: Adds a new user to Active Directory
+      parameters:
+      - description: User name
+        in: body
+        name: userName
+        required: true
+        schema:
+          type: string
+      - description: Password to log in
+        in: body
+        name: pass
+        schema:
+          type: string
+      - description: Equivalent to the user's full name
+        in: body
+        name: commonName
+        schema:
+          type: string
+      - description: First name
+        in: body
+        name: firstName
+        schema:
+          type: string
+      - description: Last name
+        in: body
+        name: lastName
+        schema:
+          type: string
+      - description: Email address
+        in: body
+        name: email
+        schema:
+          type: string
+      - description: Job title
+        in: body
+        name: title
+        schema:
+          type: string
+      - description: Relative AD folder position
+        in: body
+        name: location
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+      summary: Add a user
+      tags:
+      - users
+  /user/{user}:
+    delete:
+      consumes:
+      - text/plain
+      description: Removes a user from Active Directory
+      parameters:
+      - description: The user logon name
+        in: path
+        name: user
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Remove a user
+      tags:
+      - users
+    get:
+      consumes:
+      - text/plain
+      description: Pulls a single user
+      parameters:
+      - description: The user logon name
+        in: path
+        name: user
+        required: true
+        type: string
+      - collectionFormat: csv
+        description: Comma-delimited field names to return
+        in: query
+        items:
+          type: string
+        name: _fields
+        type: array
+      - collectionFormat: csv
+        description: Searches all fields for given string
+        in: query
+        items:
+          type: string
+        name: _q
+        type: array
+      - description: Result Index to start from
+        in: query
+        name: _start
+        type: integer
+      - description: Result Index to end to
+        in: query
+        name: _end
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get a user
+      tags:
+      - users
+    put:
+      consumes:
+      - text/plain
+      description: Updates properties of a user
+      parameters:
+      - description: The user logon name
+        in: path
+        name: user
+        required: true
+        type: string
+      - description: Password of user
+        in: body
+        name: password
+        schema:
+          type: string
+      - description: First name of user
+        in: body
+        name: firstName
+        schema:
+          type: string
+      - description: Last name of user
+        in: body
+        name: lastName
+        schema:
+          type: string
+      - description: Full name of user
+        in: body
+        name: commonName
+        schema:
+          type: string
+      - description: Email address of user
+        in: body
+        name: email
+        schema:
+          type: string
+      - description: Job title of user
+        in: body
+        name: title
+        schema:
+          type: string
+      - description: Whether the account is enabled
+        in: body
+        name: enabled
+        schema:
+          type: string
+      - description: Whether the password should expire
+        in: body
+        name: passwordExpires
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Update a user
+      tags:
+      - users
+  /user/{user}/authenticate:
+    post:
+      consumes:
+      - text/plain
+      description: Runs a username and password against AD
+      parameters:
+      - description: The user logon name
+        in: path
+        name: user
+        required: true
+        type: string
+      - description: The users password
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Authenticate a user
+      tags:
+      - users
+  /user/{user}/disable:
+    put:
+      consumes:
+      - text/plain
+      description: Disables the users account
+      parameters:
+      - description: The user logon name
+        in: path
+        name: user
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Disable a user
+      tags:
+      - users
+  /user/{user}/enable:
+    put:
+      consumes:
+      - text/plain
+      description: Enables the users account
+      parameters:
+      - description: The user logon name
+        in: path
+        name: user
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Enable a user
+      tags:
+      - users
+  /user/{user}/exists:
+    get:
+      consumes:
+      - text/plain
+      description: Returns whether a user exists or not
+      parameters:
+      - description: The user logon name
+        in: path
+        name: user
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: User exists
+      tags:
+      - users
+  /user/{user}/member-of/{group}:
+    get:
+      consumes:
+      - text/plain
+      description: Returns whether a user is a member of a group or not
+      parameters:
+      - description: The user logon name
+        in: path
+        name: user
+        required: true
+        type: string
+      - description: The group name
+        in: path
+        name: group
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: User is a member of group
+      tags:
+      - users
+  /user/{user}/move:
+    put:
+      consumes:
+      - text/plain
+      description: Moves a user to a new location relative to the directory root
+      parameters:
+      - description: The user logon name
+        in: path
+        name: user
+        required: true
+        type: string
+      - description: The new position, separated by /
+        in: body
+        name: location
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Move a user
+      tags:
+      - users
+  /user/{user}/password:
+    put:
+      consumes:
+      - text/plain
+      description: Changes the users password
+      parameters:
+      - description: The user logon name
+        in: path
+        name: user
+        required: true
+        type: string
+      - description: The users password
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Change a password
+      tags:
+      - users
+  /user/{user}/password-expires:
+    put:
+      consumes:
+      - text/plain
+      description: Set the password to eventually expire
+      parameters:
+      - description: The user logon name
+        in: path
+        name: user
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Set password expires
+      tags:
+      - users
+  /user/{user}/password-never-expires:
+    put:
+      consumes:
+      - text/plain
+      description: Sets the password to never expire
+      parameters:
+      - description: The user logon name
+        in: path
+        name: user
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Set password never expires
+      tags:
+      - users
+  /user/{user}/unlock:
+    put:
+      consumes:
+      - text/plain
+      description: Unlocks a user
+      parameters:
+      - description: The user logon name
+        in: path
+        name: user
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Unlock a user
+      tags:
+      - users
 swagger: "2.0"
