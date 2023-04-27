@@ -1,4 +1,4 @@
-package addictgo
+package main
 
 import (
 	"fmt"
@@ -14,16 +14,6 @@ import (
 // func unmarshalSearchResult(sr []*ldap.Entry) {
 // 	fmt.Println(sr)
 // }
-
-// API configuration stuct
-type API struct {
-	URL      string
-	Username string
-	Password string
-	Scope    string
-	Port     string
-	// Conn  *ldap.Conn
-}
 
 func (a *API) HostPort() string {
 	return ":" + a.Port

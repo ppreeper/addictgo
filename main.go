@@ -13,6 +13,16 @@ import (
 	"github.com/ppreeper/addictgo"
 )
 
+// API configuration stuct
+type API struct {
+	URL      string
+	Username string
+	Password string
+	Scope    string
+	Port     string
+	// Conn  *ldap.Conn
+}
+
 func main() {
 	var addictURL string
 	var addictUser string
@@ -32,7 +42,7 @@ func main() {
 		return
 	}
 
-	var a = addictgo.API{
+	var a = API{
 		URL:      addictURL,
 		Username: addictUser,
 		Password: addictPass,
@@ -54,7 +64,7 @@ func main() {
 	app.Listen(a.HostPort())
 }
 
-//LookupEnvOrString provides 12 Factor for string vars
+// LookupEnvOrString provides 12 Factor for string vars
 func LookupEnvOrString(key string, defaultVal string) string {
 	if val, ok := os.LookupEnv(key); ok {
 		return val
@@ -62,7 +72,7 @@ func LookupEnvOrString(key string, defaultVal string) string {
 	return defaultVal
 }
 
-//LookupEnvOrInt provides 12 Factor for int vars
+// LookupEnvOrInt provides 12 Factor for int vars
 func LookupEnvOrInt(key string, defaultVal int) int {
 	if val, ok := os.LookupEnv(key); ok {
 		v, err := strconv.Atoi(val)

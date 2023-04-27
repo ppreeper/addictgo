@@ -14,8 +14,8 @@ func (a *API) OU(app *fiber.App) {
 			return err
 		}
 
-		var attributes []string
-		filter := "(objectClass=organizationalUnit)"
+		// var attributes []string
+		// filter := "(objectClass=organizationalUnit)"
 
 		// fields := strings.Split(c.Query("_fields"), ",")
 		// if len(c.Query("_fields")) > 0 {
@@ -29,7 +29,7 @@ func (a *API) OU(app *fiber.App) {
 		// end := c.Query("_end")
 		// fmt.Println(c.Params("user"), fields, q, start, end)
 
-		sr := a.Search(filter, attributes)
+		// sr := a.Search(filter, attributes)
 		// c.JSON(sr)
 
 		// Javascript
@@ -37,7 +37,7 @@ func (a *API) OU(app *fiber.App) {
 		// let [error, response] = await wrapAsync(ad.ou().get(filters));
 		// respond(res, error, response);
 
-		return c.JSON(map[string]interface{}{"data": sr})
+		return c.JSON(map[string]interface{}{"data": "sr"})
 	})
 
 	app.Post("/ou", func(c *fiber.Ctx) error {
