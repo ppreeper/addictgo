@@ -9,6 +9,11 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 )
 
+func OtherOtherGet(c *fiber.Ctx) error {
+	d := make(map[string]interface{})
+	return c.JSON(d)
+}
+
 func (a *API) Other(app *fiber.App) {
 	app.Get("/other", func(c *fiber.Ctx) error {
 		// Get all other objects

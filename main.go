@@ -10,45 +10,26 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/ppreeper/addictgo"
+	"github.com/ppreeper/addictgo/ldap"
 )
 
-// API configuration stuct
-type API struct {
-	URL      string
-	Username string
-	Password string
-	Scope    string
-	Port     string
-	// Conn  *ldap.Conn
-}
-
 func main() {
-	var addictURL string
-	var addictUser string
-	var addictPass string
-	var port string
-	flag.StringVar(&addictURL, "url", LookupEnvOrString("ADDICT_URL", ""), "Address for Active Directory")
-	flag.StringVar(&addictUser, "u", LookupEnvOrString("ADDICT_USER", ""), "BIND username")
-	flag.StringVar(&addictPass, "p", LookupEnvOrString("ADDICT_PASS", ""), "BIND password")
-	flag.StringVar(&port, "port", LookupEnvOrString("ADDICT_PORT", "3001"), "Port to listen on")
+	var l ldap.LDAP
+	flag.StringVar(&l.URL, "url", LookupEnvOrString("ADDICT_URL", ""), "Address for Active Directory")
+	flag.StringVar(&l.Username, "u", LookupEnvOrString("ADDICT_USER", ""), "BIND username")
+	flag.StringVar(&l.Password, "p", LookupEnvOrString("ADDICT_PASS", ""), "BIND password")
+	flag.StringVar(&l.Port, "port", LookupEnvOrString("ADDICT_PORT", "3001"), "Port to listen on")
 	flag.Parse()
-	if addictURL == "" {
+	if l.URL == "" {
 		fmt.Println("no ldap url provided")
 		return
 	}
-	if addictUser == "" || addictPass == "" {
+	if l.Username == "" || l.Password == "" {
 		fmt.Println("no username or password provided")
 		return
 	}
 
-	var a = API{
-		URL:      addictURL,
-		Username: addictUser,
-		Password: addictPass,
-		Scope:    addictgo.GetScope(addictUser),
-		Port:     port,
-	}
+	l.Scope = ldap.GetScope(l.Username)
 
 	app := fiber.New()
 	app.Use(compress.New())
@@ -56,12 +37,15 @@ func main() {
 
 	fmt.Println(encodePassword("p4ssw04d"))
 
-	a.Other(app)
-	a.OU(app)
-	a.Group(app)
-	a.User(app)
+	Other(app)
+	OU(app)
+	Group(app)
+	User(app)
+	// a.OU(app)
+	// a.Group(app)
+	// a.User(app)
 
-	app.Listen(a.HostPort())
+	app.Listen(l.HostPort())
 }
 
 // LookupEnvOrString provides 12 Factor for string vars

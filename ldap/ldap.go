@@ -1,4 +1,4 @@
-package main
+package ldap
 
 import (
 	"fmt"
@@ -9,18 +9,22 @@ import (
 	"github.com/ppreeper/pad"
 )
 
-// LDAP
+// LDAP configuration stuct
+type LDAP struct {
+	URL      string
+	Username string
+	Password string
+	Scope    string
+	Port     string
+	// Conn  *ldap.Conn
+}
 
-// func unmarshalSearchResult(sr []*ldap.Entry) {
-// 	fmt.Println(sr)
-// }
-
-func (a *API) HostPort() string {
+func (a *LDAP) HostPort() string {
 	return ":" + a.Port
 }
 
 // Dial connect LDAP server
-func (a *API) Dial() (*ldap.Conn, error) {
+func (a *LDAP) Dial() (*ldap.Conn, error) {
 	l, err := ldap.DialURL(a.URL)
 	if err != nil {
 		fmt.Printf("%v", err)
@@ -30,7 +34,7 @@ func (a *API) Dial() (*ldap.Conn, error) {
 }
 
 // Bind to LDAP server
-func (a *API) Bind(conn *ldap.Conn, user, pass string) error {
+func (a *LDAP) Bind(conn *ldap.Conn, user, pass string) error {
 	err := conn.Bind(user, pass)
 	return err
 }
@@ -54,7 +58,7 @@ type LDAPArgs struct {
 }
 
 // Search search ldap based on filter and attributes
-func (a *API) Search(filter string, args *LDAPArgs) map[string]interface{} {
+func (a *LDAP) Search(filter string, args *LDAPArgs) map[string]interface{} {
 	fmt.Println(args)
 	var attributes []string
 	if len(args.Fields) == 0 {
@@ -132,7 +136,7 @@ func (a *API) Search(filter string, args *LDAPArgs) map[string]interface{} {
 }
 
 // Authenticate against AD server
-func (a *API) Authenticate(user, pass string) map[string]interface{} {
+func (a *LDAP) Authenticate(user, pass string) map[string]interface{} {
 	d := make(map[string]interface{})
 	d["data"] = false
 	conn, err := a.Dial()
@@ -150,7 +154,7 @@ func (a *API) Authenticate(user, pass string) map[string]interface{} {
 }
 
 // UserDN finds dn from sAMAccountName
-func (a *API) UserDN(user string) (dn string) {
+func (a *LDAP) UserDN(user string) (dn string) {
 	args := new(LDAPArgs)
 	args.Fields = "distinguishedName"
 	filter := fmt.Sprintf("(&(objectClass=user)(sAMAccountName=%s))", user)

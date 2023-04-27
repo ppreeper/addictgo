@@ -1,67 +1,54 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/monitor"
 )
 
-func (a *API) Other(app *fiber.App) {
-	app.Get("/other", func(c *fiber.Ctx) error {
-		// Get all other objects
-		// GET /other
-		// Pulls all non-user/group Active Directory objects
-		// Query Parameters
-		// _fields	Comma-delimited field names to return
-		// _q		Searches all fields for given string
-		// _start	Result Index to start from
-		// _end		Result Index to end to
-
-		// var attributes []string
-		// filter := fmt.Sprintf("(&(!(objectClass=user))(!(objectClass=group)))")
-		// d := make(map[string]interface{})
-
-		// fields := strings.Split(c.Query("_fields"), ",")
-		// if len(c.Query("_fields")) > 0 {
-		// 	for _, a := range fields {
-		// 		attributes = append(attributes, a)
-		// 	}
-		// }
-
-		// q := c.Query("_q")
-		// start := c.Query("_start")
-		// end := c.Query("_end")
-		// fmt.Println(c.Params("user"), fields, q, start, end)
-
-		// sr := svr.Search(filter, attributes)
-		// d["other"] = sr["data"]
-		// c.JSON(d)
-
-		// Javascript
-		// const config = api.parseQuery(req.query);
-		// let [error, response] = await wrapAsync(ad.other().get(config));
-		// respond(res, error, response);
-
-		args := new(LDAPArgs)
-		if err := c.QueryParser(args); err != nil {
-			return fmt.Errorf("invalid query args")
-		}
-		filter := "(&(!(objectClass=user))(!(objectClass=group)))"
-		d := make(map[string]interface{})
-		sr := a.Search(filter, args)
-		d["other"] = sr["data"]
-		return c.JSON(d)
-	})
+func basicAnswer(c *fiber.Ctx) error {
+	return c.JSON(map[string]interface{}{"data": "other"})
 }
 
-func (a *API) OU(app *fiber.App) {
-
+func Other(app *fiber.App) {
+	app.Get("/other", basicAnswer)
+	app.Get("/all", basicAnswer)
+	app.Get("/find/:filter", basicAnswer)
+	app.Get("/status", basicAnswer)
+	app.Get("/stack", basicAnswer)
+	app.Get("/monitor", monitor.New(monitor.Config{Title: "ADDict Metrics Page"}))
 }
 
-func (a *API) Group(app *fiber.App) {
+func OU(app *fiber.App) {
+	app.Get("/other", basicAnswer)
+	app.Get("/ou", basicAnswer)
+	app.Post("/ou", basicAnswer)
+	app.Get("/ou/:ou", basicAnswer)
+	app.Delete("/ou/:ou", basicAnswer)
+	app.Get("/ou/:ou/exists", basicAnswer)
 
 }
-
-func (a *API) User(app *fiber.App) {
-
+func Group(app *fiber.App) {
+	app.Get("/group", basicAnswer)
+	app.Post("/group", basicAnswer)
+	app.Get("/group/:group", basicAnswer)
+	app.Delete("/group/:group", basicAnswer)
+	app.Get("/group/:group/exists", basicAnswer)
+	app.Post("/group/:group/user/:user", basicAnswer)
+	app.Delete("/group/:group/user/:user", basicAnswer)
+}
+func User(app *fiber.App) {
+	app.Get("/user", basicAnswer)
+	app.Get("/user", basicAnswer)
+	app.Get("/user/:user", basicAnswer)
+	app.Delete("/user/:user", basicAnswer)
+	app.Get("/user/:user/exists", basicAnswer)
+	app.Get("/user/:user/member-of/:group", basicAnswer)
+	app.Post("/user/:user/authenticate", basicAnswer)
+	app.Put("/user/:user/password", basicAnswer)
+	app.Put("/user/:user/password-never-expires", basicAnswer)
+	app.Put("/user/:user/password-expires", basicAnswer)
+	app.Put("/user/:user/enable", basicAnswer)
+	app.Put("/user/:user/disable", basicAnswer)
+	app.Put("/user/:user/move", basicAnswer)
+	app.Put("/user/:user/unlock", basicAnswer)
 }
