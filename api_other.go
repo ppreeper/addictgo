@@ -1,63 +1,13 @@
-package api
+package main
 
 import (
 	"fmt"
+	"strings"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/ppreeper/addictgo/ldap"
 )
-
-// @Summary Get all other objects
-// @Description Pulls all non-user/group Active Directory objects
-// @Tags other
-// @Produce json
-// @Success 200 "OK"
-// @Router /other [get]
-func OtherGet(c *fiber.Ctx) error {
-	// Get all other objects
-	// GET /other
-	// Pulls all non-user/group Active Directory objects
-	// Query Parameters
-	// _fields	Comma-delimited field names to return
-	// _q		Searches all fields for given string
-	// _start	Result Index to start from
-	// _end		Result Index to end to
-
-	// var attributes []string
-	// filter := fmt.Sprintf("(&(!(objectClass=user))(!(objectClass=group)))")
-	// d := make(map[string]interface{})
-
-	// fields := strings.Split(c.Query("_fields"), ",")
-	// if len(c.Query("_fields")) > 0 {
-	// 	for _, a := range fields {
-	// 		attributes = append(attributes, a)
-	// 	}
-	// }
-
-	// q := c.Query("_q")
-	// start := c.Query("_start")
-	// end := c.Query("_end")
-	// fmt.Println(c.Params("user"), fields, q, start, end)
-
-	// sr := svr.Search(filter, attributes)
-	// d["other"] = sr["data"]
-	// c.JSON(d)
-
-	// Javascript
-	// const config = api.parseQuery(req.query);
-	// let [error, response] = await wrapAsync(ad.other().get(config));
-	// respond(res, error, response);
-
-	args := new(ldap.LDAPArgs)
-	if err := c.QueryParser(args); err != nil {
-		return fmt.Errorf("invalid query args")
-	}
-	// filter := "(&(!(objectClass=user))(!(objectClass=group)))"
-	d := make(map[string]interface{})
-	// sr := ldap.Search(filter, args)
-	// d["other"] = sr["data"]
-	return c.JSON(d)
-}
 
 // @Summary Get all objects
 // @Description Pulls all Active Directory objects
@@ -71,41 +21,42 @@ func OtherGet(c *fiber.Ctx) error {
 // @Success 200 "OK"
 // @Router /all [get]
 func AllGet(c *fiber.Ctx) error {
-	// var attributes []string
-	// d := make(map[string]interface{})
+	var attributes []string
+	d := make(map[string]any)
 
-	// fields := strings.Split(c.Query("_fields"), ",")
-	// if len(c.Query("_fields")) > 0 {
-	// 	for _, a := range fields {
-	// 		attributes = append(attributes, a)
-	// 	}
-	// }
+	fields := strings.Split(c.Query("_fields"), ",")
+	if len(c.Query("_fields")) > 0 {
+		for _, a := range fields {
+			attributes = append(attributes, a)
+		}
+	}
+	fmt.Println(fields, attributes)
 
-	// q := c.Query("_q")
-	// start := c.Query("_start")
-	// end := c.Query("_end")
-	// fmt.Println(c.Params("user"), fields, q, start, end)
+	q := c.Query("_q")
+	start := c.Query("_start")
+	end := c.Query("_end")
+	fmt.Println(c.Params("user"), fields, q, start, end)
 
 	// filter := fmt.Sprintf("(objectClass=user)")
-	// sr := svr.Search(filter, attributes)
+	// sr := ldap.Search(filter, attributes)
 	// d["users"] = sr["data"]
 
 	// filter = fmt.Sprintf("(objectClass=group)")
-	// sr = svr.Search(filter, attributes)
+	// sr = ldap.Search(filter, attributes)
 	// d["groups"] = sr["data"]
 
 	// filter = fmt.Sprintf("(&(!(objectClass=user))(!(objectClass=group)))")
-	// sr = svr.Search(filter, attributes)
+	// sr = ldap.Search(filter, attributes)
 	// d["other"] = sr["data"]
 
-	// c.JSON(d)
+	c.JSON(d)
 
 	// Javascript
 	// const config = api.parseQuery(req.query);
 	// let [error, response] = await wrapAsync(ad.all().get(config));
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(map[string]any{"data": "OU"})
 }
 
 // @Summary Search Active Directory
@@ -160,8 +111,60 @@ func FindFilterGet(c *fiber.Ctx) error {
 	return c.JSON(map[string]interface{}{"data": filter})
 }
 
+// @Summary Get all other objects
+// @Description Pulls all non-user/group Active Directory objects
+// @Tags other
+// @Produce json
+// @Success 200 "OK"
+// @Router /other [get]
+func OtherGet(c *fiber.Ctx) error {
+	// Get all other objects
+	// GET /other
+	// Pulls all non-user/group Active Directory objects
+	// Query Parameters
+	// _fields	Comma-delimited field names to return
+	// _q		Searches all fields for given string
+	// _start	Result Index to start from
+	// _end		Result Index to end to
+
+	// var attributes []string
+	// filter := fmt.Sprintf("(&(!(objectClass=user))(!(objectClass=group)))")
+	// d := make(map[string]interface{})
+
+	// fields := strings.Split(c.Query("_fields"), ",")
+	// if len(c.Query("_fields")) > 0 {
+	// 	for _, a := range fields {
+	// 		attributes = append(attributes, a)
+	// 	}
+	// }
+
+	// q := c.Query("_q")
+	// start := c.Query("_start")
+	// end := c.Query("_end")
+	// fmt.Println(c.Params("user"), fields, q, start, end)
+
+	// sr := svr.Search(filter, attributes)
+	// d["other"] = sr["data"]
+	// c.JSON(d)
+
+	// Javascript
+	// const config = api.parseQuery(req.query);
+	// let [error, response] = await wrapAsync(ad.other().get(config));
+	// respond(res, error, response);
+
+	args := new(ldap.LDAPArgs)
+	if err := c.QueryParser(args); err != nil {
+		return fmt.Errorf("invalid query args")
+	}
+	// filter := "(&(!(objectClass=user))(!(objectClass=group)))"
+	d := make(map[string]interface{})
+	// sr := ldap.Search(filter, args)
+	// d["other"] = sr["data"]
+	return c.JSON(d)
+}
+
 // @Summary Get API status
-// @Description Gives the uptime and status of the API
+// @Description Gives the uptime and status of the API.
 // @Tags other
 // @Produce json
 // @Success 200 "OK"
@@ -169,9 +172,20 @@ func FindFilterGet(c *fiber.Ctx) error {
 func StatusGet(c *fiber.Ctx) error {
 	d := make(map[string]interface{})
 	d["online"] = true
-	// elapsed := time.Since(startTime)
-	// d["uptime"] = fmt.Sprintf("%0.fH%0.fm%0.1fs", elapsed.Hours(), math.Mod(elapsed.Minutes(), 60.0), math.Mod(elapsed.Seconds(), 60.0))
+	elapsed := time.Since(startTime)
+	// d["uptime"] = fmt.Sprintf("%0.fH%2.fm%0.1fs", elapsed.Hours(), math.Mod(elapsed.Minutes(), 60.0), math.Mod(elapsed.Seconds(), 60.0))
+	d["uptime"] = fmt.Sprintf("%s", fmtDuration(elapsed))
 	return c.JSON(d)
+}
+
+func fmtDuration(d time.Duration) string {
+	d = d.Round(time.Second)
+	h := d / time.Hour
+	d -= h * time.Hour
+	m := d / time.Minute
+	d -= m * time.Minute
+	s := d / time.Second
+	return fmt.Sprintf("%02d:%02d:%02d", h, m, s)
 }
 
 // func StackGet(c *fiber.Ctx) error {

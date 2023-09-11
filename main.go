@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 
 	_ "github.com/ppreeper/addictgo/docs"
 
@@ -15,6 +16,8 @@ import (
 	"github.com/gofiber/swagger"
 	"github.com/ppreeper/addictgo/ldap"
 )
+
+var startTime time.Time
 
 // @title AD Dict API
 // @version 1.0
@@ -27,6 +30,7 @@ import (
 // @host localhost:3001
 // @BasePath /
 func main() {
+	startTime = time.Now()
 	var l ldap.LDAP
 	flag.StringVar(&l.URL, "url", LookupEnvOrString("ADDICT_URL", ""), "Address for Active Directory")
 	flag.StringVar(&l.Username, "u", LookupEnvOrString("ADDICT_USER", ""), "BIND username")
@@ -48,7 +52,7 @@ func main() {
 	app.Use(compress.New())
 	app.Use(cors.New())
 
-	fmt.Println(encodePassword("p4ssw04d"))
+	// fmt.Println(encodePassword("p4ssw04d"))
 
 	app.Get("/swagger/*", swagger.HandlerDefault)
 	OU(app)
@@ -80,13 +84,13 @@ func LookupEnvOrInt(key string, defaultVal int) int {
 	return defaultVal
 }
 
-func encodePassword(password string) string {
-	newPassword := ""
-	password = "\"" + password + "\""
-	pbyte := []rune(password)
-	for i := 0; i < len(password); i++ {
-		fmt.Println(pbyte[i], pbyte[i]&0xFF)
-		newPassword += string(pbyte[i] & 0xFF)
-	}
-	return newPassword
-}
+// func encodePassword(password string) string {
+// 	newPassword := ""
+// 	password = "\"" + password + "\""
+// 	pbyte := []rune(password)
+// 	for i := 0; i < len(password); i++ {
+// 		fmt.Println(pbyte[i], pbyte[i]&0xFF)
+// 		newPassword += string(pbyte[i] & 0xFF)
+// 	}
+// 	return newPassword
+// }
