@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net/http"
 	"strings"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/labstack/echo/v4"
 	"github.com/ppreeper/addictgo/ldap"
 )
 
@@ -20,22 +22,22 @@ import (
 // @Produce json
 // @Success 200 "OK"
 // @Router /all [get]
-func AllGet(c *fiber.Ctx) error {
+func AllGet(c echo.Context) error {
 	var attributes []string
 	d := make(map[string]any)
 
-	fields := strings.Split(c.Query("_fields"), ",")
-	if len(c.Query("_fields")) > 0 {
-		for _, a := range fields {
-			attributes = append(attributes, a)
-		}
-	}
+	fields := strings.Split(c.QueryParam("_fields"), ",")
+	// if len(c.QueryParam("_fields")) > 0 {
+	// 	for _, a := range fields {
+	// 		attributes = append(attributes, a)
+	// 	}
+	// }
 	fmt.Println(fields, attributes)
 
-	q := c.Query("_q")
-	start := c.Query("_start")
-	end := c.Query("_end")
-	fmt.Println(c.Params("user"), fields, q, start, end)
+	q := c.QueryParam("_q")
+	start := c.QueryParam("_start")
+	end := c.QueryParam("_end")
+	fmt.Println(c.QueryParam("user"), fields, q, start, end)
 
 	// filter := fmt.Sprintf("(objectClass=user)")
 	// sr := ldap.Search(filter, attributes)
@@ -49,14 +51,14 @@ func AllGet(c *fiber.Ctx) error {
 	// sr = ldap.Search(filter, attributes)
 	// d["other"] = sr["data"]
 
-	c.JSON(d)
+	c.JSON(http.StatusOK, d)
 
 	// Javascript
 	// const config = api.parseQuery(req.query);
 	// let [error, response] = await wrapAsync(ad.all().get(config));
 	// respond(res, error, response);
 
-	return c.JSON(map[string]any{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]any{"data": "OU"})
 }
 
 // @Summary Search Active Directory
@@ -67,14 +69,14 @@ func AllGet(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /find/{filter} [get]
-func FindFilterGet(c *fiber.Ctx) error {
+func FindFilterGet(c echo.Context) error {
 	// Search Active Directory
 	// GET /find/:filter
 	// Does a raw Active Directory search
 
 	// URL Parameters
 	// filter	Search filter, such as CN=da*
-	filter := c.Params("filter")
+	filter := c.QueryParam("filter")
 	// log.Println(filter)
 
 	// qp := new(ldap.LDAPArgs)
@@ -108,7 +110,7 @@ func FindFilterGet(c *fiber.Ctx) error {
 	// let [error, response] = await wrapAsync(ad.find(filter, config));
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": filter})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": filter})
 }
 
 // @Summary Get all other objects
@@ -117,7 +119,7 @@ func FindFilterGet(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /other [get]
-func OtherGet(c *fiber.Ctx) error {
+func OtherGet(c echo.Context) error {
 	// Get all other objects
 	// GET /other
 	// Pulls all non-user/group Active Directory objects
@@ -153,14 +155,15 @@ func OtherGet(c *fiber.Ctx) error {
 	// respond(res, error, response);
 
 	args := new(ldap.LDAPArgs)
-	if err := c.QueryParser(args); err != nil {
-		return fmt.Errorf("invalid query args")
-	}
+	log.Println(args)
+	// if err := c.QueryParams(args); err != nil {
+	// 	return fmt.Errorf("invalid query args")
+	// }
 	// filter := "(&(!(objectClass=user))(!(objectClass=group)))"
 	d := make(map[string]interface{})
 	// sr := ldap.Search(filter, args)
 	// d["other"] = sr["data"]
-	return c.JSON(d)
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary Get API status
@@ -169,13 +172,13 @@ func OtherGet(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /status [get]
-func StatusGet(c *fiber.Ctx) error {
+func StatusGet(c echo.Context) error {
 	d := make(map[string]interface{})
 	d["online"] = true
 	elapsed := time.Since(startTime)
 	// d["uptime"] = fmt.Sprintf("%0.fH%2.fm%0.1fs", elapsed.Hours(), math.Mod(elapsed.Minutes(), 60.0), math.Mod(elapsed.Seconds(), 60.0))
-	d["uptime"] = fmt.Sprintf("%s", fmtDuration(elapsed))
-	return c.JSON(d)
+	d["uptime"] = fmtDuration(elapsed)
+	return c.JSON(http.StatusOK, d)
 }
 
 func fmtDuration(d time.Duration) string {
@@ -188,7 +191,7 @@ func fmtDuration(d time.Duration) string {
 	return fmt.Sprintf("%02d:%02d:%02d", h, m, s)
 }
 
-// func StackGet(c *fiber.Ctx) error {
+// func StackGet(c echo.Context) error {
 // 	data, _ := json.MarshalIndent(app.Stack(), "", " ")
 // 	return c.Send(data)
 // }

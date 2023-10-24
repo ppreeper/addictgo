@@ -1,6 +1,10 @@
 package main
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"net/http"
+
+	"github.com/labstack/echo/v4"
+)
 
 // @Summary Get all users
 // @Description Pulls all users in Active Directory, with filters
@@ -13,7 +17,7 @@ import "github.com/gofiber/fiber/v2"
 // @Produce json
 // @Success 200 "OK"
 // @Router /user [get]
-func UsersAllGet(c *fiber.Ctx) error {
+func UsersAllGet(c echo.Context) error {
 	// filter := fmt.Sprintf("(&(objectClass=user)(!objectClass=computer))")
 	// var attributes []string
 
@@ -41,7 +45,7 @@ func UsersAllGet(c *fiber.Ctx) error {
 	// let [error, response] = await wrapAsync(ad.user().get(filter));
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
 
 // @Summary Add a user
@@ -59,13 +63,13 @@ func UsersAllGet(c *fiber.Ctx) error {
 // @Produce json
 // @Success 201 "Created"
 // @Router /user [post]
-func UserPost(c *fiber.Ctx) error {
+func UserPost(c echo.Context) error {
 	// TODO convert js code to go for user create
 	// Javascript
 	// let [error, response] = await wrapAsync(ad.user().add(req.body));
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
 
 // @Summary Get a user
@@ -80,7 +84,7 @@ func UserPost(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /user/{user} [get]
-func UserUserGet(c *fiber.Ctx) error {
+func UserUserGet(c echo.Context) error {
 	// var attributes []string
 	// filter := fmt.Sprintf("(&(objectClass=user)(!objectClass=computer)(sAMAccountName=%s))", c.Params("user"))
 
@@ -105,7 +109,7 @@ func UserUserGet(c *fiber.Ctx) error {
 	// let [error, response] = await wrapAsync(ad.user(user).get(config));
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
 
 // @Summary Remove a user
@@ -116,13 +120,13 @@ func UserUserGet(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /user/{user} [delete]
-func UserUserDelete(c *fiber.Ctx) error {
+func UserUserDelete(c echo.Context) error {
 	// Javascript
 	// const user = req.params.user;
 	// let [error, response] = await wrapAsync(ad.user(user).remove());
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
 
 // @Summary Update a user
@@ -141,13 +145,13 @@ func UserUserDelete(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /user/{user} [put]
-func UserUserPut(c *fiber.Ctx) error {
+func UserUserPut(c echo.Context) error {
 	// Javascript
 	// const user = req.params.user;
 	// let [error, response] = await wrapAsync(ad.user(user).remove());
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
 
 // @Summary User exists
@@ -158,7 +162,7 @@ func UserUserPut(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /user/{user}/exists [get]
-func UserUserExistsGet(c *fiber.Ctx) error {
+func UserUserExistsGet(c echo.Context) error {
 	// /user/{user}/exists:
 	// 	get:
 	// 		summary: "User exists"
@@ -182,7 +186,7 @@ func UserUserExistsGet(c *fiber.Ctx) error {
 	// let [error, response] = await wrapAsync(ad.user(user).exists());
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
 
 // @Summary User is a member of group
@@ -194,7 +198,7 @@ func UserUserExistsGet(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /user/{user}/member-of/{group} [get]
-func UserUserMemberofGroupGet(c *fiber.Ctx) error {
+func UserUserMemberofGroupGet(c echo.Context) error {
 	// /user/{user}/member-of/{group}:
 	// 	get:
 	// 		summary: "User is a member of group"
@@ -224,7 +228,7 @@ func UserUserMemberofGroupGet(c *fiber.Ctx) error {
 	// let [error, response] = await wrapAsync(ad.user(user).isMemberOf(group));
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
 
 // @Summary Authenticate a user
@@ -236,7 +240,7 @@ func UserUserMemberofGroupGet(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /user/{user}/authenticate [post]
-func UserUserAuthenticatePost(c *fiber.Ctx) error {
+func UserUserAuthenticatePost(c echo.Context) error {
 	// /user/{user}/authenticate:
 	// 	post:
 	// 		summary: "Authenticate a user"
@@ -259,7 +263,7 @@ func UserUserAuthenticatePost(c *fiber.Ctx) error {
 	// let [error, response] = await wrapAsync(ad.user(user).authenticate(pass));
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
 
 // @Summary Change a password
@@ -271,7 +275,7 @@ func UserUserAuthenticatePost(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /user/{user}/password [put]
-func UserUserPasswordPut(c *fiber.Ctx) error {
+func UserUserPasswordPut(c echo.Context) error {
 	// /user/{user}/password:
 	// 	put:
 	// 		summary: "Change a password"
@@ -291,7 +295,7 @@ func UserUserPasswordPut(c *fiber.Ctx) error {
 	// error = (error) ? Object.assign({success: false}, error) : error;
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
 
 // @Summary Set password never expires
@@ -302,7 +306,7 @@ func UserUserPasswordPut(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /user/{user}/password-never-expires [put]
-func UserUserPasswordneverexpiresPut(c *fiber.Ctx) error {
+func UserUserPasswordneverexpiresPut(c echo.Context) error {
 	// /user/{user}/password-never-expires:
 	// 	put:
 	// 		summary: "Set password never expires"
@@ -318,7 +322,7 @@ func UserUserPasswordneverexpiresPut(c *fiber.Ctx) error {
 	// error = (error) ? Object.assign({success: false}, error) : error;
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
 
 // @Summary Set password expires
@@ -329,7 +333,7 @@ func UserUserPasswordneverexpiresPut(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /user/{user}/password-expires [put]
-func UserUserPasswordExpiresPut(c *fiber.Ctx) error {
+func UserUserPasswordExpiresPut(c echo.Context) error {
 	// /user/{user}/password-expires:
 	// 	put:
 	// 		summary: "Set password expires"
@@ -344,7 +348,7 @@ func UserUserPasswordExpiresPut(c *fiber.Ctx) error {
 	// let response = (!error) ? {success: true} : undefined;
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
 
 // @Summary Enable a user
@@ -355,7 +359,7 @@ func UserUserPasswordExpiresPut(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /user/{user}/enable [put]
-func UserUserEnablePut(c *fiber.Ctx) error {
+func UserUserEnablePut(c echo.Context) error {
 	// /user/{user}/enable:
 	// 	put:
 	// 		summary: "Enable a user"
@@ -370,7 +374,7 @@ func UserUserEnablePut(c *fiber.Ctx) error {
 	// let response = (!error) ? {success: true} : undefined;
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
 
 // @Summary Disable a user
@@ -381,7 +385,7 @@ func UserUserEnablePut(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /user/{user}/disable [put]
-func UserUserDisablePut(c *fiber.Ctx) error {
+func UserUserDisablePut(c echo.Context) error {
 	// /user/{user}/disable:
 	// 	put:
 	// 		summary: "Disable a user"
@@ -396,7 +400,7 @@ func UserUserDisablePut(c *fiber.Ctx) error {
 	// let response = (!error) ? {success: true} : undefined;
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
 
 // @Summary Move a user
@@ -408,7 +412,7 @@ func UserUserDisablePut(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /user/{user}/move [put]
-func UserUserMovePut(c *fiber.Ctx) error {
+func UserUserMovePut(c echo.Context) error {
 	// /user/{user}/move:
 	// 	put:
 	// 		summary: "Move a user"
@@ -425,7 +429,7 @@ func UserUserMovePut(c *fiber.Ctx) error {
 	// let [error, response] = await wrapAsync(ad.user(user).move(location));
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
 
 // @Summary Unlock a user
@@ -436,7 +440,7 @@ func UserUserMovePut(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /user/{user}/unlock [put]
-func UserUserUnlockPut(c *fiber.Ctx) error {
+func UserUserUnlockPut(c echo.Context) error {
 	// /user/{user}/unlock:
 	// 	put:
 	// 		summary: "Unlock a user"
@@ -450,5 +454,5 @@ func UserUserUnlockPut(c *fiber.Ctx) error {
 	// let response = (!error) ? {success: true} : undefined;
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }

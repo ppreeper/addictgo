@@ -1,7 +1,10 @@
 package main
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"log"
+	"net/http"
+
+	"github.com/labstack/echo/v4"
 	"github.com/ppreeper/addictgo/ldap"
 )
 
@@ -16,11 +19,12 @@ import (
 // @Produce json
 // @Success 200 "OK"
 // @Router /ou [get]
-func OUGet(c *fiber.Ctx) error {
+func OUGet(c echo.Context) error {
 	qp := new(ldap.LDAPArgs)
-	if err := c.QueryParser(qp); err != nil {
-		return err
-	}
+	log.Println(qp)
+	// if err := c.QueryParam(qp); err != nil {
+	// 	return err
+	// }
 
 	// var attributes []string
 	// filter := "(objectClass=organizationalUnit)"
@@ -45,7 +49,7 @@ func OUGet(c *fiber.Ctx) error {
 	// let [error, response] = await wrapAsync(ad.ou().get(filters));
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "sr"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "sr"})
 }
 
 // @Summary Add an OU
@@ -58,7 +62,7 @@ func OUGet(c *fiber.Ctx) error {
 // @Produce json
 // @Success 201 "Created"
 // @Router /ou [post]
-func OUPost(c *fiber.Ctx) error {
+func OUPost(c echo.Context) error {
 	// queries:
 	// 	name:
 	// 	description: "Name of the OU as displayed."
@@ -70,7 +74,7 @@ func OUPost(c *fiber.Ctx) error {
 	// let [error, response] = await wrapAsync(ad.ou().add(req.body));
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
 
 // @Summary Get a single OU
@@ -85,7 +89,7 @@ func OUPost(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /ou/{ou} [get]
-func OUOUGet(c *fiber.Ctx) error {
+func OUOUGet(c echo.Context) error {
 	// var attributes []string
 	// filter := fmt.Sprintf("(&(objectClass=organizationalUnit)(name=%s))", c.Params("ou"))
 
@@ -110,7 +114,7 @@ func OUOUGet(c *fiber.Ctx) error {
 	// let [error, response] = await wrapAsync(ad.ou(ou).get(filters));
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
 
 // @Summary Remove an OU
@@ -121,13 +125,13 @@ func OUOUGet(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /ou/{ou} [delete]
-func OUOUDelete(c *fiber.Ctx) error {
+func OUOUDelete(c echo.Context) error {
 	// Javascript
 	// const ou = req.params.ou;
 	// let [error, response] = await wrapAsync(ad.ou(ou).remove());
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
 
 // @Summary OU exists
@@ -138,7 +142,7 @@ func OUOUDelete(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /ou/{ou}/exists [get]
-func OUOUExists(c *fiber.Ctx) error {
+func OUOUExists(c echo.Context) error {
 	// parameters:
 	// 	ou: params.ou
 
@@ -158,5 +162,5 @@ func OUOUExists(c *fiber.Ctx) error {
 	// let [error, response] = await wrapAsync(ad.ou(ou).exists());
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }

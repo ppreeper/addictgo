@@ -4,17 +4,18 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"strconv"
 	"time"
 
+	"github.com/labstack/echo-contrib/echoprometheus"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	_ "github.com/ppreeper/addictgo/docs"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/compress"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/swagger"
 	"github.com/ppreeper/addictgo/ldap"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 var startTime time.Time
@@ -48,19 +49,58 @@ func main() {
 
 	l.Scope = ldap.GetScope(l.Username)
 
-	app := fiber.New()
-	app.Use(compress.New())
-	app.Use(cors.New())
+	app := echo.New()
+	app.Use(middleware.Logger())
+	app.Use(middleware.Recover())
+	app.Use(middleware.CORS())
+	app.Use(echoprometheus.NewMiddleware("addict"))
 
-	// fmt.Println(encodePassword("p4ssw04d"))
+	fmt.Println(encodePassword("p4ssw04d"))
 
-	app.Get("/swagger/*", swagger.HandlerDefault)
-	OU(app)
-	Group(app)
-	User(app)
-	Other(app)
+	app.GET("/swagger/*", echoSwagger.WrapHandler)
+	app.GET("/status", StatusGet)
+	app.GET("/metrics", echoprometheus.NewHandler())
 
-	app.Listen(l.HostPort())
+	// ROUTER
+	// Router > Other
+	app.GET("/other", basicAnswer)
+	app.GET("/all", AllGet)
+	app.GET("/find/:filter", FindFilterGet)
+	app.GET("/stack", basicAnswer)
+
+	// Router > OU
+	app.GET("/ou", basicAnswer)
+	app.POST("/ou", basicAnswer)
+	app.GET("/ou/:ou", basicAnswer)
+	app.DELETE("/ou/:ou", basicAnswer)
+	app.GET("/ou/:ou/exists", basicAnswer)
+
+	// Router > Group
+	app.GET("/group", basicAnswer)
+	app.POST("/group", basicAnswer)
+	app.GET("/group/:group", basicAnswer)
+	app.DELETE("/group/:group", basicAnswer)
+	app.GET("/group/:group/exists", basicAnswer)
+	app.POST("/group/:group/user/:user", basicAnswer)
+	app.DELETE("/group/:group/user/:user", basicAnswer)
+
+	// Router > User
+	app.GET("/user", basicAnswer)
+	app.GET("/user", basicAnswer)
+	app.GET("/user/:user", basicAnswer)
+	app.DELETE("/user/:user", basicAnswer)
+	app.GET("/user/:user/exists", basicAnswer)
+	app.GET("/user/:user/member-of/:group", basicAnswer)
+	app.POST("/user/:user/authenticate", basicAnswer)
+	app.PUT("/user/:user/password", basicAnswer)
+	app.PUT("/user/:user/password-never-expires", basicAnswer)
+	app.PUT("/user/:user/password-expires", basicAnswer)
+	app.PUT("/user/:user/enable", basicAnswer)
+	app.PUT("/user/:user/disable", basicAnswer)
+	app.PUT("/user/:user/move", basicAnswer)
+	app.PUT("/user/:user/unlock", basicAnswer)
+
+	app.Logger.Fatal(app.Start(l.HostPort()))
 	// app.ListenTLS(l.HostPort(), "cert.pem", "key.pem")
 }
 
@@ -84,13 +124,25 @@ func LookupEnvOrInt(key string, defaultVal int) int {
 	return defaultVal
 }
 
-// func encodePassword(password string) string {
-// 	newPassword := ""
-// 	password = "\"" + password + "\""
-// 	pbyte := []rune(password)
-// 	for i := 0; i < len(password); i++ {
-// 		fmt.Println(pbyte[i], pbyte[i]&0xFF)
-// 		newPassword += string(pbyte[i] & 0xFF)
-// 	}
-// 	return newPassword
-// }
+func encodePassword(password string) string {
+	newPassword := ""
+	password = "\"" + password + "\""
+	pbyte := []rune(password)
+	for i := 0; i < len(password); i++ {
+		// fmt.Println(pbyte[i], pbyte[i]&0xFF)
+		newPassword += string(pbyte[i] & 0xFF)
+	}
+	return newPassword
+}
+
+func encodePassword2(password string) string {
+	passrune := []rune(password)
+	for k, v := range passrune {
+		passrune[k] = v & 0xFF
+	}
+	return string(passrune)
+}
+
+func basicAnswer(c echo.Context) error {
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "other"})
+}

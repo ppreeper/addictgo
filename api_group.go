@@ -1,7 +1,9 @@
 package main
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"net/http"
+
+	"github.com/labstack/echo/v4"
 )
 
 // @Summary Get all groups
@@ -15,7 +17,7 @@ import (
 // @Produce json
 // @Success 200 "OK"
 // @Router /group [get]
-func GroupGet(c *fiber.Ctx) error {
+func GroupGet(c echo.Context) error {
 	// /group:
 	// 	get:
 	// 		summary: "Get all groups"
@@ -45,7 +47,7 @@ func GroupGet(c *fiber.Ctx) error {
 	// let [error, response] = await wrapAsync(ad.group().get(config));
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
 
 // @Summary Add a group
@@ -58,7 +60,7 @@ func GroupGet(c *fiber.Ctx) error {
 // @Produce json
 // @Success 201 "Created"
 // @Router /group [post]
-func GroupPost(c *fiber.Ctx) error {
+func GroupPost(c echo.Context) error {
 	// /group:
 	// 	post:
 	// 		summary: "Add a group"
@@ -75,7 +77,7 @@ func GroupPost(c *fiber.Ctx) error {
 	// let [error, response] = await wrapAsync(ad.group().add(req.body));
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
 
 // @Summary Get a single group
@@ -90,7 +92,7 @@ func GroupPost(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /group/{group} [get]
-func GroupGroupGet(c *fiber.Ctx) error {
+func GroupGroupGet(c echo.Context) error {
 	// /group/{group}:
 	// 	get:
 	// 		summary: "Get a single group"
@@ -123,7 +125,7 @@ func GroupGroupGet(c *fiber.Ctx) error {
 	// let [error, response] = await wrapAsync(ad.group(group).get(config));
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
 
 // @Summary Remove a group
@@ -134,7 +136,7 @@ func GroupGroupGet(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /group/{group} [delete]
-func GroupGroupDelete(c *fiber.Ctx) error {
+func GroupGroupDelete(c echo.Context) error {
 	// /group/{group}:
 	// 	delete:
 	// 		summary: "Remove a group"
@@ -147,7 +149,7 @@ func GroupGroupDelete(c *fiber.Ctx) error {
 	// let [error, response] = await wrapAsync(ad.group(group).remove());
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
 
 // @Summary Group exists
@@ -158,7 +160,7 @@ func GroupGroupDelete(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /group/{group}/exists [get]
-func GroupGroupExistsGet(c *fiber.Ctx) error {
+func GroupGroupExistsGet(c echo.Context) error {
 	// /group/{group}/exists:
 	// 	get:
 	// 		summary: "Group exists"
@@ -182,7 +184,7 @@ func GroupGroupExistsGet(c *fiber.Ctx) error {
 	// let [error, response] = await wrapAsync(ad.group(group).exists());
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
 
 // @Summary Add user to group
@@ -194,7 +196,7 @@ func GroupGroupExistsGet(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /group/{group}/user/{user} [post]
-func GroupGroupUserUserPost(c *fiber.Ctx) error {
+func GroupGroupUserUserPost(c echo.Context) error {
 	// /group/{group}/user/{user}:
 	// 	post:
 	// 		summary: "Add user to group"
@@ -210,7 +212,7 @@ func GroupGroupUserUserPost(c *fiber.Ctx) error {
 	// response = (!error) ? {success: true} : response;
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
 
 // @Summary Remove user from group
@@ -222,7 +224,7 @@ func GroupGroupUserUserPost(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 "OK"
 // @Router /group/{group}/user/{user} [delete]
-func GroupGroupUserUserDelete(c *fiber.Ctx) error {
+func GroupGroupUserUserDelete(c echo.Context) error {
 	// /group/{group}/user/{user}:
 	// 	delete:
 	// 		summary: "Remove user from group"
@@ -238,5 +240,5 @@ func GroupGroupUserUserDelete(c *fiber.Ctx) error {
 	// response = (!error) ? {success: true} : response;
 	// respond(res, error, response);
 
-	return c.JSON(map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
 }
