@@ -413,7 +413,7 @@ paths:
       - ou
   /status:
     get:
-      description: Gives the uptime and status of the API
+      description: Gives the uptime and status of the API.
       produces:
       - application/json
       responses:
