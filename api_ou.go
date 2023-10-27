@@ -1,8 +1,9 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/ppreeper/addictgo/ldap"
@@ -20,36 +21,18 @@ import (
 // @Success 200 "OK"
 // @Router /ou [get]
 func OUGet(c echo.Context) error {
-	qp := new(ldap.LDAPArgs)
-	log.Println(qp)
-	// if err := c.QueryParam(qp); err != nil {
-	// 	return err
-	// }
+	d := make(map[string]any)
+	var args ldap.LDAPArgs
 
-	// var attributes []string
-	// filter := "(objectClass=organizationalUnit)"
+	args.Fields = c.QueryParam("_fields")
+	args.Q = c.QueryParam("_q")
+	args.Start, _ = strconv.Atoi(c.QueryParam("_start"))
+	args.End, _ = strconv.Atoi(c.QueryParam("_end"))
+	filter := "(objectClass=organizationalUnit)"
+	sr := lconn.Search(filter, args)
+	d["other"] = sr["data"]
 
-	// fields := strings.Split(c.Query("_fields"), ",")
-	// if len(c.Query("_fields")) > 0 {
-	// 	for _, a := range fields {
-	// 		attributes = append(attributes, a)
-	// 	}
-	// }
-
-	// q := c.Query("_q")
-	// start := c.Query("_start")
-	// end := c.Query("_end")
-	// fmt.Println(c.Params("user"), fields, q, start, end)
-
-	// sr := a.Search(filter, attributes)
-	// c.JSON(sr)
-
-	// Javascript
-	// const filters = api.parseQuery(req.query);
-	// let [error, response] = await wrapAsync(ad.ou().get(filters));
-	// respond(res, error, response);
-
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "sr"})
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary Add an OU
@@ -63,6 +46,7 @@ func OUGet(c echo.Context) error {
 // @Success 201 "Created"
 // @Router /ou [post]
 func OUPost(c echo.Context) error {
+	d := make(map[string]any)
 	// queries:
 	// 	name:
 	// 	description: "Name of the OU as displayed."
@@ -74,7 +58,7 @@ func OUPost(c echo.Context) error {
 	// let [error, response] = await wrapAsync(ad.ou().add(req.body));
 	// respond(res, error, response);
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusCreated, d)
 }
 
 // @Summary Get a single OU
@@ -90,31 +74,20 @@ func OUPost(c echo.Context) error {
 // @Success 200 "OK"
 // @Router /ou/{ou} [get]
 func OUOUGet(c echo.Context) error {
-	// var attributes []string
-	// filter := fmt.Sprintf("(&(objectClass=organizationalUnit)(name=%s))", c.Params("ou"))
+	d := make(map[string]any)
+	var args ldap.LDAPArgs
 
-	// fields := strings.Split(c.Query("_fields"), ",")
-	// if len(c.Query("_fields")) > 0 {
-	// 	for _, a := range fields {
-	// 		attributes = append(attributes, a)
-	// 	}
-	// }
+	args.Fields = c.QueryParam("_fields")
+	args.Q = c.QueryParam("_q")
+	args.Start, _ = strconv.Atoi(c.QueryParam("_start"))
+	args.End, _ = strconv.Atoi(c.QueryParam("_end"))
 
-	// q := c.Query("_q")
-	// start := c.Query("_start")
-	// end := c.Query("_end")
-	// fmt.Println(c.Params("user"), fields, q, start, end)
+	filter := fmt.Sprintf("(&(objectClass=organizationalUnit)(name=%s))", c.Param("ou"))
 
-	// sr := svr.Search(filter, attributes)
-	// c.JSON(sr)
+	sr := lconn.Search(filter, args)
+	d["other"] = sr["data"]
 
-	// Javascript
-	// let ou = req.params.ou;
-	// const filters = api.parseQuery(req.query);
-	// let [error, response] = await wrapAsync(ad.ou(ou).get(filters));
-	// respond(res, error, response);
-
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary Remove an OU
@@ -126,12 +99,13 @@ func OUOUGet(c echo.Context) error {
 // @Success 200 "OK"
 // @Router /ou/{ou} [delete]
 func OUOUDelete(c echo.Context) error {
+	d := make(map[string]any)
 	// Javascript
 	// const ou = req.params.ou;
 	// let [error, response] = await wrapAsync(ad.ou(ou).remove());
 	// respond(res, error, response);
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary OU exists
@@ -143,6 +117,7 @@ func OUOUDelete(c echo.Context) error {
 // @Success 200 "OK"
 // @Router /ou/{ou}/exists [get]
 func OUOUExists(c echo.Context) error {
+	d := make(map[string]any)
 	// parameters:
 	// 	ou: params.ou
 
@@ -162,5 +137,5 @@ func OUOUExists(c echo.Context) error {
 	// let [error, response] = await wrapAsync(ad.ou(ou).exists());
 	// respond(res, error, response);
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }

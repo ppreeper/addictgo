@@ -1,9 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/ppreeper/addictgo/ldap"
 )
 
 // @Summary Get all groups
@@ -18,66 +21,51 @@ import (
 // @Success 200 "OK"
 // @Router /group [get]
 func GroupGet(c echo.Context) error {
-	// /group:
-	// 	get:
-	// 		summary: "Get all groups"
-	// 		description: "Pulls all groups in Active Directory, with filters."
-	// 		queries: filterQuery
+	d := make(map[string]any)
+	var args ldap.LDAPArgs
 
-	// var attributes []string
-	// filter := fmt.Sprintf("(objectClass=group)")
+	args.Fields = c.QueryParam("_fields")
+	args.Q = c.QueryParam("_q")
+	args.Start, _ = strconv.Atoi(c.QueryParam("_start"))
+	args.End, _ = strconv.Atoi(c.QueryParam("_end"))
 
-	// fields := strings.Split(c.Query("_fields"), ",")
-	// if len(c.Query("_fields")) > 0 {
-	// 	for _, a := range fields {
-	// 		attributes = append(attributes, a)
-	// 	}
-	// }
+	filter := "(objectClass=group)"
+	sr := lconn.Search(filter, args)
+	d["groups"] = sr["data"]
 
-	// q := c.Query("_q")
-	// start := c.Query("_start")
-	// end := c.Query("_end")
-	// fmt.Println(c.Params("user"), fields, q, start, end)
-
-	// sr := svr.Search(filter, attributes)
-	// c.JSON(sr)
-
-	// Javascript
-	// const config = api.parseQuery(req.query);
-	// let [error, response] = await wrapAsync(ad.group().get(config));
-	// respond(res, error, response);
-
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary Add a group
 // @Description Adds a new group to Active Directory
 // @Tags group
-// @Accept plain
-// @Param name body string true "Name of the group as displayed"
-// @Param description body string false "Descripton of the group"
-// @Param location body string false "Relative AD Position separated by /"
-// @Produce json
+// @Param cn formData string true "Name of the group as displayed"
+// @Param description formData string false "Descripton of the group"
+// @Param location formData string true "Relative AD Position separated by / (ex Users or Users/Office)"
 // @Success 201 "Created"
 // @Router /group [post]
 func GroupPost(c echo.Context) error {
-	// /group:
-	// 	post:
-	// 		summary: "Add a group"
-	// 		description: "Adds a new group to Active Directory."
-	// 		queries:
-	// 		name:
-	// 		description: "Name of the Group as displayed."
-	// 		optional: false
-	// 		description: "Description of the Security Group."
-	// 		location: "Relative AD position, separated by /."
+	d := make(map[string]any)
 
-	// Javascript
-	// fmt.Println(c.Route().Params)
-	// let [error, response] = await wrapAsync(ad.group().add(req.body));
-	// respond(res, error, response);
+	cn := c.FormValue("cn")
+	description := c.FormValue("description")
+	location := c.FormValue("location")
+	if cn == "" || location == "" {
+		return fmt.Errorf("cn and location are mandatory fields")
+	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	dn := "CN=" + cn
+	if location != "" {
+		dn += ",CN=" + location
+	}
+	attrs := ldap.Attrs{
+		{Type: "objectClass", Vals: []string{"group"}},
+		{Type: "CN", Vals: []string{cn}},
+		{Type: "description", Vals: []string{description}},
+	}
+	lconn.AddRecord(dn, attrs)
+
+	return c.JSON(http.StatusCreated, d)
 }
 
 // @Summary Get a single group
@@ -93,39 +81,19 @@ func GroupPost(c echo.Context) error {
 // @Success 200 "OK"
 // @Router /group/{group} [get]
 func GroupGroupGet(c echo.Context) error {
-	// /group/{group}:
-	// 	get:
-	// 		summary: "Get a single group"
-	// 		description: "Pulls a single group."
-	// 		parameters:
-	// 		group: params.group
-	// 		queries: filterQuery
+	d := make(map[string]any)
+	var args ldap.LDAPArgs
 
-	// var attributes []string
-	// filter := fmt.Sprintf("(&(objectClass=group)(sAMAccountName=%s))", c.Params("group"))
+	args.Fields = c.QueryParam("_fields")
+	args.Q = c.QueryParam("_q")
+	args.Start, _ = strconv.Atoi(c.QueryParam("_start"))
+	args.End, _ = strconv.Atoi(c.QueryParam("_end"))
 
-	// fields := strings.Split(c.Query("_fields"), ",")
-	// if len(c.Query("_fields")) > 0 {
-	// 	for _, a := range fields {
-	// 		attributes = append(attributes, a)
-	// 	}
-	// }
+	filter := fmt.Sprintf("(&(objectClass=group)(sAMAccountName=%s))", c.Param("group"))
+	sr := lconn.Search(filter, args)
+	d["groups"] = sr["data"]
 
-	// q := c.Query("_q")
-	// start := c.Query("_start")
-	// end := c.Query("_end")
-	// fmt.Println(c.Params("user"), fields, q, start, end)
-
-	// sr := svr.Search(filter, attributes)
-	// c.JSON(sr)
-
-	// Javascript
-	// const group = req.params.group;
-	// const config = api.parseQuery(req.query);
-	// let [error, response] = await wrapAsync(ad.group(group).get(config));
-	// respond(res, error, response);
-
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary Remove a group
@@ -137,6 +105,7 @@ func GroupGroupGet(c echo.Context) error {
 // @Success 200 "OK"
 // @Router /group/{group} [delete]
 func GroupGroupDelete(c echo.Context) error {
+	d := make(map[string]any)
 	// /group/{group}:
 	// 	delete:
 	// 		summary: "Remove a group"
@@ -149,7 +118,7 @@ func GroupGroupDelete(c echo.Context) error {
 	// let [error, response] = await wrapAsync(ad.group(group).remove());
 	// respond(res, error, response);
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary Group exists
@@ -161,6 +130,7 @@ func GroupGroupDelete(c echo.Context) error {
 // @Success 200 "OK"
 // @Router /group/{group}/exists [get]
 func GroupGroupExistsGet(c echo.Context) error {
+	d := make(map[string]any)
 	// /group/{group}/exists:
 	// 	get:
 	// 		summary: "Group exists"
@@ -184,7 +154,7 @@ func GroupGroupExistsGet(c echo.Context) error {
 	// let [error, response] = await wrapAsync(ad.group(group).exists());
 	// respond(res, error, response);
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary Add user to group
@@ -197,6 +167,7 @@ func GroupGroupExistsGet(c echo.Context) error {
 // @Success 200 "OK"
 // @Router /group/{group}/user/{user} [post]
 func GroupGroupUserUserPost(c echo.Context) error {
+	d := make(map[string]any)
 	// /group/{group}/user/{user}:
 	// 	post:
 	// 		summary: "Add user to group"
@@ -212,7 +183,7 @@ func GroupGroupUserUserPost(c echo.Context) error {
 	// response = (!error) ? {success: true} : response;
 	// respond(res, error, response);
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary Remove user from group
@@ -225,6 +196,7 @@ func GroupGroupUserUserPost(c echo.Context) error {
 // @Success 200 "OK"
 // @Router /group/{group}/user/{user} [delete]
 func GroupGroupUserUserDelete(c echo.Context) error {
+	d := make(map[string]any)
 	// /group/{group}/user/{user}:
 	// 	delete:
 	// 		summary: "Remove user from group"
@@ -240,5 +212,5 @@ func GroupGroupUserUserDelete(c echo.Context) error {
 	// response = (!error) ? {success: true} : response;
 	// respond(res, error, response);
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }

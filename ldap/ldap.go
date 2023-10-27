@@ -6,8 +6,17 @@ import (
 	"strings"
 
 	"github.com/go-ldap/ldap/v3"
-	"github.com/ppreeper/pad"
+	"github.com/ppreeper/str"
 )
+
+// GetScope uses bind username to determine basic domain scope
+func GetScope(bindUser string) (scope string) {
+	domain := strings.Split(strings.Split(bindUser, "@")[1], ".")
+	for _, v := range domain {
+		scope += fmt.Sprintf("dc=%s,", v)
+	}
+	return str.LJustLen(scope, len(scope)-1)
+}
 
 // LDAP configuration stuct
 type LDAP struct {
@@ -16,7 +25,7 @@ type LDAP struct {
 	Password string
 	Scope    string
 	Port     string
-	// Conn  *ldap.Conn
+	Conn     *ldap.Conn
 }
 
 func (a *LDAP) HostPort() string {
@@ -39,6 +48,36 @@ func (a *LDAP) Bind(conn *ldap.Conn, user, pass string) error {
 	return err
 }
 
+// Authenticate against AD server
+func (a *LDAP) Authenticate(user, pass string) map[string]any {
+	d := make(map[string]any)
+	d["data"] = false
+	conn, err := a.Dial()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close()
+	err = conn.Bind(a.UserDN(user), pass)
+	if err != nil {
+		d["data"] = false
+	} else {
+		d["data"] = true
+	}
+	return d
+}
+
+// UserDN finds dn from sAMAccountName
+func (a *LDAP) UserDN(user string) (dn string) {
+	args := new(LDAPArgs)
+	args.Fields = "distinguishedName"
+	filter := fmt.Sprintf("(&(objectClass=user)(sAMAccountName=%s))", user)
+	sr := a.Search(filter, *args)
+	if len(sr) != 0 {
+		return fmt.Sprintf("%s", sr["distinguishedName"])
+	}
+	return
+}
+
 type LDAPArgs struct {
 	Fields string `query:"fields"`
 	EQ     string `query:"eq"`
@@ -58,18 +97,17 @@ type LDAPArgs struct {
 }
 
 // Search search ldap based on filter and attributes
-func (a *LDAP) Search(filter string, args *LDAPArgs) map[string]interface{} {
-	fmt.Println(args)
+func (a *LDAP) Search(filter string, args LDAPArgs) map[string]any {
 	var attributes []string
 	if len(args.Fields) == 0 {
 		attributes = append(attributes, "*")
 	} else {
 		attributes = strings.Split(args.Fields, ",")
 	}
-	fmt.Println("fields: ", args.Fields, "attributes: ", attributes, len(attributes))
-	fmt.Println("q: ", args.Q)
-	fmt.Println("page: ", args.Page, "start: ", args.Start, "end: ", args.End, "limit: ", args.Limit)
-	fmt.Println("sort: ", args.Sort, " order: ", args.Order)
+	// fmt.Println("fields: ", args.Fields, "attributes: ", attributes, len(attributes))
+	// fmt.Println("q: ", args.Q)
+	// fmt.Println("page: ", args.Page, "start: ", args.Start, "end: ", args.End, "limit: ", args.Limit)
+	// fmt.Println("sort: ", args.Sort, " order: ", args.Order)
 
 	conn, err := a.Dial()
 	if err != nil {
@@ -104,10 +142,10 @@ func (a *LDAP) Search(filter string, args *LDAPArgs) map[string]interface{} {
 		end = start + args.Limit
 	}
 
-	fmt.Println("start: ", start, "end: ", end, "count: ", len(sr.Entries))
+	// fmt.Println("start: ", start, "end: ", end, "count: ", len(sr.Entries))
 
-	d := make(map[string]interface{})
-	var dd []map[string]interface{}
+	d := make(map[string]any)
+	var dd []map[string]any
 	for k, e := range sr.Entries {
 		if k >= start {
 			if k < end {
@@ -115,7 +153,7 @@ func (a *LDAP) Search(filter string, args *LDAPArgs) map[string]interface{} {
 				// e.PrettyPrint(2)
 				// fmt.Println(len(e.Attributes))
 				if len(e.Attributes) > 0 {
-					m := make(map[string]interface{})
+					m := make(map[string]any)
 					for _, attr := range e.Attributes {
 						if len(attr.Values) == 1 {
 							m[attr.Name] = attr.Values[0]
@@ -131,45 +169,30 @@ func (a *LDAP) Search(filter string, args *LDAPArgs) map[string]interface{} {
 		}
 	}
 	d["data"] = dd
-	// fmt.Println(d)
 	return d
 }
 
-// Authenticate against AD server
-func (a *LDAP) Authenticate(user, pass string) map[string]interface{} {
-	d := make(map[string]interface{})
-	d["data"] = false
+type Attrs []ldap.Attribute
+
+func (a *LDAP) AddRecord(dn string, attributes Attrs) error {
 	conn, err := a.Dial()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("error: %v\n", err)
 	}
 	defer conn.Close()
-	err = conn.Bind(a.UserDN(user), pass)
+	err = conn.Bind(a.Username, a.Password)
 	if err != nil {
-		d["data"] = false
-	} else {
-		d["data"] = true
+		fmt.Printf("error: %v\n", err)
 	}
-	return d
-}
-
-// UserDN finds dn from sAMAccountName
-func (a *LDAP) UserDN(user string) (dn string) {
-	args := new(LDAPArgs)
-	args.Fields = "distinguishedName"
-	filter := fmt.Sprintf("(&(objectClass=user)(sAMAccountName=%s))", user)
-	sr := a.Search(filter, args)
-	if len(sr) != 0 {
-		return fmt.Sprintf("%s", sr["distinguishedName"])
+	dn += "," + a.Scope
+	addRequest := ldap.AddRequest{
+		DN:         dn,
+		Attributes: attributes,
+		Controls:   []ldap.Control{},
 	}
-	return
-}
-
-// GetScope uses bind username to determine basic domain scope
-func GetScope(bindUser string) (scope string) {
-	domain := strings.Split(strings.Split(bindUser, "@")[1], ".")
-	for _, v := range domain {
-		scope += fmt.Sprintf("dc=%s,", v)
+	err = conn.Add(&addRequest)
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
 	}
-	return pad.LJustLen(scope, len(scope)-1)
+	return err
 }

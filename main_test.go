@@ -9,7 +9,3 @@ func TestEncodePassword(t *testing.T) {
 func BenchmarkEncodePassword(b *testing.B) {
 	encodePassword("hello")
 }
-
-func BenchmarkEncodePassword2(b *testing.B) {
-	encodePassword2("hello")
-}

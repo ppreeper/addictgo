@@ -2,9 +2,8 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
-	"strings"
+	"strconv"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -23,42 +22,27 @@ import (
 // @Success 200 "OK"
 // @Router /all [get]
 func AllGet(c echo.Context) error {
-	var attributes []string
 	d := make(map[string]any)
+	var args ldap.LDAPArgs
 
-	fields := strings.Split(c.QueryParam("_fields"), ",")
-	// if len(c.QueryParam("_fields")) > 0 {
-	// 	for _, a := range fields {
-	// 		attributes = append(attributes, a)
-	// 	}
-	// }
-	fmt.Println(fields, attributes)
+	args.Fields = c.QueryParam("_fields")
+	args.Q = c.QueryParam("_q")
+	args.Start, _ = strconv.Atoi(c.QueryParam("_start"))
+	args.End, _ = strconv.Atoi(c.QueryParam("_end"))
 
-	q := c.QueryParam("_q")
-	start := c.QueryParam("_start")
-	end := c.QueryParam("_end")
-	fmt.Println(c.QueryParam("user"), fields, q, start, end)
+	filter := "(objectClass=user)"
+	sr := lconn.Search(filter, args)
+	d["users"] = sr["data"]
 
-	// filter := fmt.Sprintf("(objectClass=user)")
-	// sr := ldap.Search(filter, attributes)
-	// d["users"] = sr["data"]
+	filter = "(objectClass=group)"
+	sr = lconn.Search(filter, args)
+	d["groups"] = sr["data"]
 
-	// filter = fmt.Sprintf("(objectClass=group)")
-	// sr = ldap.Search(filter, attributes)
-	// d["groups"] = sr["data"]
+	filter = "(&(!(objectClass=user))(!(objectClass=group)))"
+	sr = lconn.Search(filter, args)
+	d["other"] = sr["data"]
 
-	// filter = fmt.Sprintf("(&(!(objectClass=user))(!(objectClass=group)))")
-	// sr = ldap.Search(filter, attributes)
-	// d["other"] = sr["data"]
-
-	c.JSON(http.StatusOK, d)
-
-	// Javascript
-	// const config = api.parseQuery(req.query);
-	// let [error, response] = await wrapAsync(ad.all().get(config));
-	// respond(res, error, response);
-
-	return c.JSON(http.StatusOK, map[string]any{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary Search Active Directory
@@ -70,99 +54,45 @@ func AllGet(c echo.Context) error {
 // @Success 200 "OK"
 // @Router /find/{filter} [get]
 func FindFilterGet(c echo.Context) error {
-	// Search Active Directory
-	// GET /find/:filter
-	// Does a raw Active Directory search
+	d := make(map[string]any)
+	var args ldap.LDAPArgs
 
-	// URL Parameters
 	// filter	Search filter, such as CN=da*
 	filter := c.QueryParam("filter")
-	// log.Println(filter)
+	args.Fields = c.QueryParam("_fields")
+	args.Q = c.QueryParam("_q")
+	args.Start, _ = strconv.Atoi(c.QueryParam("_start"))
+	args.End, _ = strconv.Atoi(c.QueryParam("_end"))
 
-	// qp := new(ldap.LDAPArgs)
-	// if err := c.QueryParser(qp); err != nil {
-	// 	return err
-	// }
-	// log.Println("fields:", qp.Fields)
-	// log.Println("eq:", qp.EQ)
-	// log.Println("ne:", qp.NE)
-	// log.Println("lt:", qp.LT)
-	// log.Println("gt:", qp.GT)
-	// log.Println("gte:", qp.GTE)
-	// log.Println("lte:", qp.LTE)
-	// log.Println("like:", qp.Like)
-	// log.Println("sort:", qp.Sort)
-	// log.Println("order:", qp.Order)
-	// log.Println("page:", qp.Page)
-	// log.Println("limit:", qp.Limit)
-	// log.Println("start:", qp.Start)
-	// log.Println("end:", qp.End)
-	// log.Println("q:", qp.Q)
+	sr := lconn.Search(filter, args)
+	d["data"] = sr["data"]
 
-	// 	var attributes []string
-	// 	// d := make(map[string]interface{})
-	// 	filter := fmt.Sprintf("(*)")
-	// 	sr := svr.Search(filter, attributes)
-	// 	c.JSON(sr)
-	// Javascript
-	// const filter = req.params.filter;
-	// const config = api.parseQuery(req.query);
-	// let [error, response] = await wrapAsync(ad.find(filter, config));
-	// respond(res, error, response);
-
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": filter})
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary Get all other objects
 // @Description Pulls all non-user/group Active Directory objects
 // @Tags other
+// @Param _fields query []string false "Comma-delimited field names to return"
+// @Param _q query []string false "Searches all fields for given string"
+// @Param _start query int false "Result Index to start from"
+// @Param _end query int false "Result Index to end to"
 // @Produce json
 // @Success 200 "OK"
 // @Router /other [get]
 func OtherGet(c echo.Context) error {
-	// Get all other objects
-	// GET /other
-	// Pulls all non-user/group Active Directory objects
-	// Query Parameters
-	// _fields	Comma-delimited field names to return
-	// _q		Searches all fields for given string
-	// _start	Result Index to start from
-	// _end		Result Index to end to
+	d := make(map[string]any)
+	var args ldap.LDAPArgs
 
-	// var attributes []string
-	// filter := fmt.Sprintf("(&(!(objectClass=user))(!(objectClass=group)))")
-	// d := make(map[string]interface{})
+	args.Fields = c.QueryParam("_fields")
+	args.Q = c.QueryParam("_q")
+	args.Start, _ = strconv.Atoi(c.QueryParam("_start"))
+	args.End, _ = strconv.Atoi(c.QueryParam("_end"))
 
-	// fields := strings.Split(c.Query("_fields"), ",")
-	// if len(c.Query("_fields")) > 0 {
-	// 	for _, a := range fields {
-	// 		attributes = append(attributes, a)
-	// 	}
-	// }
+	filter := "(&(!(objectClass=user))(!(objectClass=group)))"
+	sr := lconn.Search(filter, args)
+	d["other"] = sr["data"]
 
-	// q := c.Query("_q")
-	// start := c.Query("_start")
-	// end := c.Query("_end")
-	// fmt.Println(c.Params("user"), fields, q, start, end)
-
-	// sr := svr.Search(filter, attributes)
-	// d["other"] = sr["data"]
-	// c.JSON(d)
-
-	// Javascript
-	// const config = api.parseQuery(req.query);
-	// let [error, response] = await wrapAsync(ad.other().get(config));
-	// respond(res, error, response);
-
-	args := new(ldap.LDAPArgs)
-	log.Println(args)
-	// if err := c.QueryParams(args); err != nil {
-	// 	return fmt.Errorf("invalid query args")
-	// }
-	// filter := "(&(!(objectClass=user))(!(objectClass=group)))"
-	d := make(map[string]interface{})
-	// sr := ldap.Search(filter, args)
-	// d["other"] = sr["data"]
 	return c.JSON(http.StatusOK, d)
 }
 
@@ -190,8 +120,3 @@ func fmtDuration(d time.Duration) string {
 	s := d / time.Second
 	return fmt.Sprintf("%02d:%02d:%02d", h, m, s)
 }
-
-// func StackGet(c echo.Context) error {
-// 	data, _ := json.MarshalIndent(app.Stack(), "", " ")
-// 	return c.Send(data)
-// }

@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"strconv"
 	"time"
@@ -20,6 +19,8 @@ import (
 
 var startTime time.Time
 
+var lconn ldap.LDAP
+
 // @title AD Dict API
 // @version 1.0
 // @description This is the swagger spec for AD Dict
@@ -32,22 +33,22 @@ var startTime time.Time
 // @BasePath /
 func main() {
 	startTime = time.Now()
-	var l ldap.LDAP
-	flag.StringVar(&l.URL, "url", LookupEnvOrString("ADDICT_URL", ""), "Address for Active Directory")
-	flag.StringVar(&l.Username, "u", LookupEnvOrString("ADDICT_USER", ""), "BIND username")
-	flag.StringVar(&l.Password, "p", LookupEnvOrString("ADDICT_PASS", ""), "BIND password")
-	flag.StringVar(&l.Port, "port", LookupEnvOrString("ADDICT_PORT", "3001"), "Port to listen on")
+	// var l ldap.LDAP
+	flag.StringVar(&lconn.URL, "url", LookupEnvOrString("ADDICT_URL", ""), "Address for Active Directory")
+	flag.StringVar(&lconn.Username, "u", LookupEnvOrString("ADDICT_USER", ""), "BIND username")
+	flag.StringVar(&lconn.Password, "p", LookupEnvOrString("ADDICT_PASS", ""), "BIND password")
+	flag.StringVar(&lconn.Port, "port", LookupEnvOrString("ADDICT_PORT", "3001"), "Port to listen on")
 	flag.Parse()
-	if l.URL == "" {
+	if lconn.URL == "" {
 		fmt.Println("no ldap url provided")
 		return
 	}
-	if l.Username == "" || l.Password == "" {
+	if lconn.Username == "" || lconn.Password == "" {
 		fmt.Println("no username or password provided")
 		return
 	}
 
-	l.Scope = ldap.GetScope(l.Username)
+	lconn.Scope = ldap.GetScope(lconn.Username)
 
 	app := echo.New()
 	app.Use(middleware.Logger())
@@ -55,52 +56,49 @@ func main() {
 	app.Use(middleware.CORS())
 	app.Use(echoprometheus.NewMiddleware("addict"))
 
-	fmt.Println(encodePassword("p4ssw04d"))
-
 	app.GET("/swagger/*", echoSwagger.WrapHandler)
 	app.GET("/status", StatusGet)
 	app.GET("/metrics", echoprometheus.NewHandler())
 
 	// ROUTER
 	// Router > Other
-	app.GET("/other", basicAnswer)
 	app.GET("/all", AllGet)
 	app.GET("/find/:filter", FindFilterGet)
-	app.GET("/stack", basicAnswer)
+	app.GET("/other", OtherGet)
 
 	// Router > OU
-	app.GET("/ou", basicAnswer)
-	app.POST("/ou", basicAnswer)
-	app.GET("/ou/:ou", basicAnswer)
-	app.DELETE("/ou/:ou", basicAnswer)
-	app.GET("/ou/:ou/exists", basicAnswer)
+	app.GET("/ou", OUGet)
+	app.POST("/ou", OUPost)
+	app.GET("/ou/:ou", OUOUGet)
+	app.DELETE("/ou/:ou", OUOUDelete)
+	app.GET("/ou/:ou/exists", OUOUExists)
 
 	// Router > Group
-	app.GET("/group", basicAnswer)
-	app.POST("/group", basicAnswer)
-	app.GET("/group/:group", basicAnswer)
-	app.DELETE("/group/:group", basicAnswer)
-	app.GET("/group/:group/exists", basicAnswer)
-	app.POST("/group/:group/user/:user", basicAnswer)
-	app.DELETE("/group/:group/user/:user", basicAnswer)
+	app.GET("/group", GroupGet)
+	app.POST("/group", GroupPost)
+	app.GET("/group/:group", GroupGroupGet)
+	app.DELETE("/group/:group", GroupGroupDelete)
+	app.GET("/group/:group/exists", GroupGroupExistsGet)
+	app.POST("/group/:group/user/:user", GroupGroupUserUserPost)
+	app.DELETE("/group/:group/user/:user", GroupGroupUserUserDelete)
 
 	// Router > User
-	app.GET("/user", basicAnswer)
-	app.GET("/user", basicAnswer)
-	app.GET("/user/:user", basicAnswer)
-	app.DELETE("/user/:user", basicAnswer)
-	app.GET("/user/:user/exists", basicAnswer)
-	app.GET("/user/:user/member-of/:group", basicAnswer)
-	app.POST("/user/:user/authenticate", basicAnswer)
-	app.PUT("/user/:user/password", basicAnswer)
-	app.PUT("/user/:user/password-never-expires", basicAnswer)
-	app.PUT("/user/:user/password-expires", basicAnswer)
-	app.PUT("/user/:user/enable", basicAnswer)
-	app.PUT("/user/:user/disable", basicAnswer)
-	app.PUT("/user/:user/move", basicAnswer)
-	app.PUT("/user/:user/unlock", basicAnswer)
+	app.GET("/user", UsersAllGet)
+	app.POST("/user", UserPost)
+	app.GET("/user/:user", UserUserGet)
+	app.DELETE("/user/:user", UserUserDelete)
+	app.GET("/user/:user/exists", UserUserExistsGet)
+	app.GET("/user/:user/member-of/:group", UserUserMemberofGroupGet)
+	app.POST("/user/:user/authenticate", UserUserAuthenticatePost)
+	app.PUT("/user/:user/password", UserUserPasswordPut)
+	app.PUT("/user/:user/password-never-expires", UserUserPasswordneverexpiresPut)
+	app.PUT("/user/:user/password-expires", UserUserPasswordExpiresPut)
+	app.PUT("/user/:user/enable", UserUserEnablePut)
+	app.PUT("/user/:user/disable", UserUserDisablePut)
+	app.PUT("/user/:user/move", UserUserMovePut)
+	app.PUT("/user/:user/unlock", UserUserUnlockPut)
 
-	app.Logger.Fatal(app.Start(l.HostPort()))
+	app.Logger.Fatal(app.Start(lconn.HostPort()))
 	// app.ListenTLS(l.HostPort(), "cert.pem", "key.pem")
 }
 
@@ -125,24 +123,9 @@ func LookupEnvOrInt(key string, defaultVal int) int {
 }
 
 func encodePassword(password string) string {
-	newPassword := ""
-	password = "\"" + password + "\""
-	pbyte := []rune(password)
-	for i := 0; i < len(password); i++ {
-		// fmt.Println(pbyte[i], pbyte[i]&0xFF)
-		newPassword += string(pbyte[i] & 0xFF)
-	}
-	return newPassword
-}
-
-func encodePassword2(password string) string {
 	passrune := []rune(password)
 	for k, v := range passrune {
 		passrune[k] = v & 0xFF
 	}
 	return string(passrune)
-}
-
-func basicAnswer(c echo.Context) error {
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "other"})
 }

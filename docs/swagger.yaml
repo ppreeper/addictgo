@@ -104,28 +104,22 @@ paths:
       tags:
       - group
     post:
-      consumes:
-      - text/plain
       description: Adds a new group to Active Directory
       parameters:
       - description: Name of the group as displayed
-        in: body
-        name: name
+        in: formData
+        name: cn
         required: true
-        schema:
-          type: string
+        type: string
       - description: Descripton of the group
-        in: body
+        in: formData
         name: description
-        schema:
-          type: string
-      - description: Relative AD Position separated by /
-        in: body
+        type: string
+      - description: Relative AD Position separated by / (ex Users or Users/Office)
+        in: formData
         name: location
-        schema:
-          type: string
-      produces:
-      - application/json
+        required: true
+        type: string
       responses:
         "201":
           description: Created
@@ -260,6 +254,29 @@ paths:
   /other:
     get:
       description: Pulls all non-user/group Active Directory objects
+      parameters:
+      - collectionFormat: csv
+        description: Comma-delimited field names to return
+        in: query
+        items:
+          type: string
+        name: _fields
+        type: array
+      - collectionFormat: csv
+        description: Searches all fields for given string
+        in: query
+        items:
+          type: string
+        name: _q
+        type: array
+      - description: Result Index to start from
+        in: query
+        name: _start
+        type: integer
+      - description: Result Index to end to
+        in: query
+        name: _end
+        type: integer
       produces:
       - application/json
       responses:

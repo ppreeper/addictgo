@@ -155,41 +155,30 @@
             },
             "post": {
                 "description": "Adds a new group to Active Directory",
-                "consumes": [
-                    "text/plain"
-                ],
-                "produces": [
-                    "application/json"
-                ],
                 "tags": [
                     "group"
                 ],
                 "summary": "Add a group",
                 "parameters": [
                     {
+                        "type": "string",
                         "description": "Name of the group as displayed",
-                        "name": "name",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "name": "cn",
+                        "in": "formData",
+                        "required": true
                     },
                     {
+                        "type": "string",
                         "description": "Descripton of the group",
                         "name": "description",
-                        "in": "body",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "formData"
                     },
                     {
-                        "description": "Relative AD Position separated by /",
+                        "type": "string",
+                        "description": "Relative AD Position separated by / (ex Users or Users/Office)",
                         "name": "location",
-                        "in": "body",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -396,6 +385,40 @@
                     "other"
                 ],
                 "summary": "Get all other objects",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Comma-delimited field names to return",
+                        "name": "_fields",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Searches all fields for given string",
+                        "name": "_q",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Result Index to start from",
+                        "name": "_start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Result Index to end to",
+                        "name": "_end",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"

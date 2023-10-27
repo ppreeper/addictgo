@@ -1,9 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/ppreeper/addictgo/ldap"
 )
 
 // @Summary Get all users
@@ -18,34 +21,19 @@ import (
 // @Success 200 "OK"
 // @Router /user [get]
 func UsersAllGet(c echo.Context) error {
-	// filter := fmt.Sprintf("(&(objectClass=user)(!objectClass=computer))")
-	// var attributes []string
+	d := make(map[string]any)
+	var args ldap.LDAPArgs
 
-	// fields := strings.Split(c.Query("_fields"), ",")
-	// fmt.Println("fields: ", fields)
-	// if len(c.Query("_fields")) > 0 {
-	// 	for _, a := range fields {
-	// 		attributes = append(attributes, a)
-	// 	}
-	// }
-	// q := strings.Split(c.Query("_q"), ",")
-	// fmt.Println("q: ", q)
+	args.Fields = c.QueryParam("_fields")
+	args.Q = c.QueryParam("_q")
+	args.Start, _ = strconv.Atoi(c.QueryParam("_start"))
+	args.End, _ = strconv.Atoi(c.QueryParam("_end"))
 
-	// q := c.Query("_q")
-	// start := c.Query("_start")
-	// end := c.Query("_end")
-	// fmt.Println(c.Params("user"), len(fields), fields, attributes)
+	filter := "(&(objectClass=user)(!objectClass=computer))"
+	sr := lconn.Search(filter, args)
+	d["users"] = sr["data"]
 
-	// sr := svr.Search(filter, attributes)
-	// fmt.Printf("%v \n", sr)
-
-	// c.JSON(sr)
-	// Javascript
-	// const filter = api.parseQuery(req.query);
-	// let [error, response] = await wrapAsync(ad.user().get(filter));
-	// respond(res, error, response);
-
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary Add a user
@@ -64,12 +52,13 @@ func UsersAllGet(c echo.Context) error {
 // @Success 201 "Created"
 // @Router /user [post]
 func UserPost(c echo.Context) error {
+	d := make(map[string]any)
 	// TODO convert js code to go for user create
 	// Javascript
 	// let [error, response] = await wrapAsync(ad.user().add(req.body));
 	// respond(res, error, response);
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusCreated, d)
 }
 
 // @Summary Get a user
@@ -85,31 +74,19 @@ func UserPost(c echo.Context) error {
 // @Success 200 "OK"
 // @Router /user/{user} [get]
 func UserUserGet(c echo.Context) error {
-	// var attributes []string
-	// filter := fmt.Sprintf("(&(objectClass=user)(!objectClass=computer)(sAMAccountName=%s))", c.Params("user"))
+	d := make(map[string]any)
+	var args ldap.LDAPArgs
 
-	// fields := strings.Split(c.Query("_fields"), ",")
-	// if len(c.Query("_fields")) > 0 {
-	// 	for _, a := range fields {
-	// 		attributes = append(attributes, a)
-	// 	}
-	// }
+	args.Fields = c.QueryParam("_fields")
+	args.Q = c.QueryParam("_q")
+	args.Start, _ = strconv.Atoi(c.QueryParam("_start"))
+	args.End, _ = strconv.Atoi(c.QueryParam("_end"))
 
-	// q := c.Query("_q")
-	// start := c.Query("_start")
-	// end := c.Query("_end")
-	// fmt.Println(c.Params("user"), len(fields), fields, attributes)
+	filter := fmt.Sprintf("(&(objectClass=user)(!objectClass=computer)(sAMAccountName=%s))", c.Param("user"))
+	sr := lconn.Search(filter, args)
+	d["users"] = sr["data"]
 
-	// sr := svr.Search(filter, attributes)
-	// c.JSON(sr)
-
-	// Javascript
-	// const user = req.params.user;
-	// const config = api.parseQuery(req.query);
-	// let [error, response] = await wrapAsync(ad.user(user).get(config));
-	// respond(res, error, response);
-
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary Remove a user
@@ -121,12 +98,13 @@ func UserUserGet(c echo.Context) error {
 // @Success 200 "OK"
 // @Router /user/{user} [delete]
 func UserUserDelete(c echo.Context) error {
+	d := make(map[string]any)
 	// Javascript
 	// const user = req.params.user;
 	// let [error, response] = await wrapAsync(ad.user(user).remove());
 	// respond(res, error, response);
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary Update a user
@@ -146,12 +124,13 @@ func UserUserDelete(c echo.Context) error {
 // @Success 200 "OK"
 // @Router /user/{user} [put]
 func UserUserPut(c echo.Context) error {
+	d := make(map[string]any)
 	// Javascript
 	// const user = req.params.user;
 	// let [error, response] = await wrapAsync(ad.user(user).remove());
 	// respond(res, error, response);
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary User exists
@@ -163,6 +142,7 @@ func UserUserPut(c echo.Context) error {
 // @Success 200 "OK"
 // @Router /user/{user}/exists [get]
 func UserUserExistsGet(c echo.Context) error {
+	d := make(map[string]any)
 	// /user/{user}/exists:
 	// 	get:
 	// 		summary: "User exists"
@@ -186,7 +166,7 @@ func UserUserExistsGet(c echo.Context) error {
 	// let [error, response] = await wrapAsync(ad.user(user).exists());
 	// respond(res, error, response);
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary User is a member of group
@@ -199,6 +179,7 @@ func UserUserExistsGet(c echo.Context) error {
 // @Success 200 "OK"
 // @Router /user/{user}/member-of/{group} [get]
 func UserUserMemberofGroupGet(c echo.Context) error {
+	d := make(map[string]any)
 	// /user/{user}/member-of/{group}:
 	// 	get:
 	// 		summary: "User is a member of group"
@@ -228,7 +209,7 @@ func UserUserMemberofGroupGet(c echo.Context) error {
 	// let [error, response] = await wrapAsync(ad.user(user).isMemberOf(group));
 	// respond(res, error, response);
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary Authenticate a user
@@ -241,6 +222,7 @@ func UserUserMemberofGroupGet(c echo.Context) error {
 // @Success 200 "OK"
 // @Router /user/{user}/authenticate [post]
 func UserUserAuthenticatePost(c echo.Context) error {
+	d := make(map[string]any)
 	// /user/{user}/authenticate:
 	// 	post:
 	// 		summary: "Authenticate a user"
@@ -263,7 +245,7 @@ func UserUserAuthenticatePost(c echo.Context) error {
 	// let [error, response] = await wrapAsync(ad.user(user).authenticate(pass));
 	// respond(res, error, response);
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary Change a password
@@ -276,6 +258,7 @@ func UserUserAuthenticatePost(c echo.Context) error {
 // @Success 200 "OK"
 // @Router /user/{user}/password [put]
 func UserUserPasswordPut(c echo.Context) error {
+	d := make(map[string]any)
 	// /user/{user}/password:
 	// 	put:
 	// 		summary: "Change a password"
@@ -295,7 +278,7 @@ func UserUserPasswordPut(c echo.Context) error {
 	// error = (error) ? Object.assign({success: false}, error) : error;
 	// respond(res, error, response);
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary Set password never expires
@@ -307,6 +290,7 @@ func UserUserPasswordPut(c echo.Context) error {
 // @Success 200 "OK"
 // @Router /user/{user}/password-never-expires [put]
 func UserUserPasswordneverexpiresPut(c echo.Context) error {
+	d := make(map[string]any)
 	// /user/{user}/password-never-expires:
 	// 	put:
 	// 		summary: "Set password never expires"
@@ -322,7 +306,7 @@ func UserUserPasswordneverexpiresPut(c echo.Context) error {
 	// error = (error) ? Object.assign({success: false}, error) : error;
 	// respond(res, error, response);
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary Set password expires
@@ -334,6 +318,7 @@ func UserUserPasswordneverexpiresPut(c echo.Context) error {
 // @Success 200 "OK"
 // @Router /user/{user}/password-expires [put]
 func UserUserPasswordExpiresPut(c echo.Context) error {
+	d := make(map[string]any)
 	// /user/{user}/password-expires:
 	// 	put:
 	// 		summary: "Set password expires"
@@ -348,7 +333,7 @@ func UserUserPasswordExpiresPut(c echo.Context) error {
 	// let response = (!error) ? {success: true} : undefined;
 	// respond(res, error, response);
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary Enable a user
@@ -360,6 +345,7 @@ func UserUserPasswordExpiresPut(c echo.Context) error {
 // @Success 200 "OK"
 // @Router /user/{user}/enable [put]
 func UserUserEnablePut(c echo.Context) error {
+	d := make(map[string]any)
 	// /user/{user}/enable:
 	// 	put:
 	// 		summary: "Enable a user"
@@ -374,7 +360,7 @@ func UserUserEnablePut(c echo.Context) error {
 	// let response = (!error) ? {success: true} : undefined;
 	// respond(res, error, response);
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary Disable a user
@@ -386,6 +372,7 @@ func UserUserEnablePut(c echo.Context) error {
 // @Success 200 "OK"
 // @Router /user/{user}/disable [put]
 func UserUserDisablePut(c echo.Context) error {
+	d := make(map[string]any)
 	// /user/{user}/disable:
 	// 	put:
 	// 		summary: "Disable a user"
@@ -400,7 +387,7 @@ func UserUserDisablePut(c echo.Context) error {
 	// let response = (!error) ? {success: true} : undefined;
 	// respond(res, error, response);
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary Move a user
@@ -413,6 +400,7 @@ func UserUserDisablePut(c echo.Context) error {
 // @Success 200 "OK"
 // @Router /user/{user}/move [put]
 func UserUserMovePut(c echo.Context) error {
+	d := make(map[string]any)
 	// /user/{user}/move:
 	// 	put:
 	// 		summary: "Move a user"
@@ -429,7 +417,7 @@ func UserUserMovePut(c echo.Context) error {
 	// let [error, response] = await wrapAsync(ad.user(user).move(location));
 	// respond(res, error, response);
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }
 
 // @Summary Unlock a user
@@ -441,6 +429,7 @@ func UserUserMovePut(c echo.Context) error {
 // @Success 200 "OK"
 // @Router /user/{user}/unlock [put]
 func UserUserUnlockPut(c echo.Context) error {
+	d := make(map[string]any)
 	// /user/{user}/unlock:
 	// 	put:
 	// 		summary: "Unlock a user"
@@ -454,5 +443,5 @@ func UserUserUnlockPut(c echo.Context) error {
 	// let response = (!error) ? {success: true} : undefined;
 	// respond(res, error, response);
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"data": "OU"})
+	return c.JSON(http.StatusOK, d)
 }
