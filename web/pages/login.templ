@@ -1,0 +1,14 @@
+package pages
+
+import (
+	l "github.com/ppreeper/addictgo/web/layout"
+	c "github.com/ppreeper/addictgo/web/component"
+)
+
+templ Login() {
+	@l.Base("AD Dict", "bg-gray-800", "font-sans", "leading-normal", "tracking-normal", "mt-12") {
+		<div class="flex items-center justify-center h-screen">
+			@c.LoginForm("Login")
+		</div>
+	}
+}

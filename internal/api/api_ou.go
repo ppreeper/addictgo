@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"fmt"
@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
-	"github.com/ppreeper/addictgo/ldap"
 )
 
 // @Summary Get all OUs
@@ -19,10 +18,10 @@ import (
 // @Param _end query int false "Result Index to end to"
 // @Produce json
 // @Success 200 "OK"
-// @Router /ou [get]
-func OUGet(c echo.Context) error {
+// @Router /api/ou [get]
+func (lconn *LDAP) OUGet(c echo.Context) error {
 	d := make(map[string]any)
-	var args ldap.LDAPArgs
+	var args LDAPArgs
 
 	args.Fields = c.QueryParam("_fields")
 	args.Q = c.QueryParam("_q")
@@ -44,8 +43,8 @@ func OUGet(c echo.Context) error {
 // @Param location body string false "Relative AD Position separated by /"
 // @Produce json
 // @Success 201 "Created"
-// @Router /ou [post]
-func OUPost(c echo.Context) error {
+// @Router /api/ou [post]
+func (lconn *LDAP) OUPost(c echo.Context) error {
 	d := make(map[string]any)
 	// queries:
 	// 	name:
@@ -72,10 +71,10 @@ func OUPost(c echo.Context) error {
 // @Param _end query int false "Result Index to end to"
 // @Produce json
 // @Success 200 "OK"
-// @Router /ou/{ou} [get]
-func OUOUGet(c echo.Context) error {
+// @Router /api/ou/{ou} [get]
+func (lconn *LDAP) OUOUGet(c echo.Context) error {
 	d := make(map[string]any)
-	var args ldap.LDAPArgs
+	var args LDAPArgs
 
 	args.Fields = c.QueryParam("_fields")
 	args.Q = c.QueryParam("_q")
@@ -97,8 +96,8 @@ func OUOUGet(c echo.Context) error {
 // @Param ou path string true "The OU name"
 // @Produce json
 // @Success 200 "OK"
-// @Router /ou/{ou} [delete]
-func OUOUDelete(c echo.Context) error {
+// @Router /api/ou/{ou} [delete]
+func (lconn *LDAP) OUOUDelete(c echo.Context) error {
 	d := make(map[string]any)
 	// Javascript
 	// const ou = req.params.ou;
@@ -115,8 +114,8 @@ func OUOUDelete(c echo.Context) error {
 // @Param ou path string true "The OU name"
 // @Produce json
 // @Success 200 "OK"
-// @Router /ou/{ou}/exists [get]
-func OUOUExists(c echo.Context) error {
+// @Router /api/ou/{ou}/exists [get]
+func (lconn *LDAP) OUOUExists(c echo.Context) error {
 	d := make(map[string]any)
 	// parameters:
 	// 	ou: params.ou

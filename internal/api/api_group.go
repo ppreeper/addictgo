@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"fmt"
@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
-	"github.com/ppreeper/addictgo/ldap"
 )
 
 // @Summary Get all groups
@@ -19,10 +18,10 @@ import (
 // @Param _end query int false "Result Index to end to"
 // @Produce json
 // @Success 200 "OK"
-// @Router /group [get]
-func GroupGet(c echo.Context) error {
+// @Router /api/group [get]
+func (lconn *LDAP) GroupGet(c echo.Context) error {
 	d := make(map[string]any)
-	var args ldap.LDAPArgs
+	var args LDAPArgs
 
 	args.Fields = c.QueryParam("_fields")
 	args.Q = c.QueryParam("_q")
@@ -43,8 +42,8 @@ func GroupGet(c echo.Context) error {
 // @Param description formData string false "Descripton of the group"
 // @Param location formData string true "Relative AD Position separated by / (ex Users or Users/Office)"
 // @Success 201 "Created"
-// @Router /group [post]
-func GroupPost(c echo.Context) error {
+// @Router /api/group [post]
+func (lconn *LDAP) GroupPost(c echo.Context) error {
 	d := make(map[string]any)
 
 	cn := c.FormValue("cn")
@@ -58,7 +57,7 @@ func GroupPost(c echo.Context) error {
 	if location != "" {
 		dn += ",CN=" + location
 	}
-	attrs := ldap.Attrs{
+	attrs := Attrs{
 		{Type: "objectClass", Vals: []string{"group"}},
 		{Type: "CN", Vals: []string{cn}},
 		{Type: "description", Vals: []string{description}},
@@ -79,10 +78,10 @@ func GroupPost(c echo.Context) error {
 // @Param _end query int false "Result Index to end to"
 // @Produce json
 // @Success 200 "OK"
-// @Router /group/{group} [get]
-func GroupGroupGet(c echo.Context) error {
+// @Router /api/group/{group} [get]
+func (lconn *LDAP) GroupGroupGet(c echo.Context) error {
 	d := make(map[string]any)
-	var args ldap.LDAPArgs
+	var args LDAPArgs
 
 	args.Fields = c.QueryParam("_fields")
 	args.Q = c.QueryParam("_q")
@@ -103,8 +102,8 @@ func GroupGroupGet(c echo.Context) error {
 // @Param group path string true "The group name"
 // @Produce json
 // @Success 200 "OK"
-// @Router /group/{group} [delete]
-func GroupGroupDelete(c echo.Context) error {
+// @Router /api/group/{group} [delete]
+func (lconn *LDAP) GroupGroupDelete(c echo.Context) error {
 	d := make(map[string]any)
 	// /group/{group}:
 	// 	delete:
@@ -128,8 +127,8 @@ func GroupGroupDelete(c echo.Context) error {
 // @Param group path string true "The group name"
 // @Produce json
 // @Success 200 "OK"
-// @Router /group/{group}/exists [get]
-func GroupGroupExistsGet(c echo.Context) error {
+// @Router /api/group/{group}/exists [get]
+func (lconn *LDAP) GroupGroupExistsGet(c echo.Context) error {
 	d := make(map[string]any)
 	// /group/{group}/exists:
 	// 	get:
@@ -165,8 +164,8 @@ func GroupGroupExistsGet(c echo.Context) error {
 // @Param user path string true "The user logon name"
 // @Produce json
 // @Success 200 "OK"
-// @Router /group/{group}/user/{user} [post]
-func GroupGroupUserUserPost(c echo.Context) error {
+// @Router /api/group/{group}/user/{user} [post]
+func (lconn *LDAP) GroupGroupUserUserPost(c echo.Context) error {
 	d := make(map[string]any)
 	// /group/{group}/user/{user}:
 	// 	post:
@@ -194,8 +193,8 @@ func GroupGroupUserUserPost(c echo.Context) error {
 // @Param user path string true "The user logon name"
 // @Produce json
 // @Success 200 "OK"
-// @Router /group/{group}/user/{user} [delete]
-func GroupGroupUserUserDelete(c echo.Context) error {
+// @Router /api/group/{group}/user/{user} [delete]
+func (lconn *LDAP) GroupGroupUserUserDelete(c echo.Context) error {
 	d := make(map[string]any)
 	// /group/{group}/user/{user}:
 	// 	delete:

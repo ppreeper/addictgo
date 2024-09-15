@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"fmt"
@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
-	"github.com/ppreeper/addictgo/ldap"
 )
 
 // @Summary Get all users
@@ -19,10 +18,10 @@ import (
 // @Param _end query int false "Result Index to end to"
 // @Produce json
 // @Success 200 "OK"
-// @Router /user [get]
-func UsersAllGet(c echo.Context) error {
+// @Router /api/user [get]
+func (lconn *LDAP) UsersAllGet(c echo.Context) error {
 	d := make(map[string]any)
-	var args ldap.LDAPArgs
+	var args LDAPArgs
 
 	args.Fields = c.QueryParam("_fields")
 	args.Q = c.QueryParam("_q")
@@ -50,8 +49,8 @@ func UsersAllGet(c echo.Context) error {
 // @Param location body string false "Relative AD folder position"
 // @Produce json
 // @Success 201 "Created"
-// @Router /user [post]
-func UserPost(c echo.Context) error {
+// @Router /api/user [post]
+func (lconn *LDAP) UserPost(c echo.Context) error {
 	d := make(map[string]any)
 	// TODO convert js code to go for user create
 	// Javascript
@@ -72,10 +71,10 @@ func UserPost(c echo.Context) error {
 // @Param _end query int false "Result Index to end to"
 // @Produce json
 // @Success 200 "OK"
-// @Router /user/{user} [get]
-func UserUserGet(c echo.Context) error {
+// @Router /api/user/{user} [get]
+func (lconn *LDAP) UserUserGet(c echo.Context) error {
 	d := make(map[string]any)
-	var args ldap.LDAPArgs
+	var args LDAPArgs
 
 	args.Fields = c.QueryParam("_fields")
 	args.Q = c.QueryParam("_q")
@@ -96,8 +95,8 @@ func UserUserGet(c echo.Context) error {
 // @Param user path string true "The user logon name"
 // @Produce json
 // @Success 200 "OK"
-// @Router /user/{user} [delete]
-func UserUserDelete(c echo.Context) error {
+// @Router /api/user/{user} [delete]
+func (lconn *LDAP) UserUserDelete(c echo.Context) error {
 	d := make(map[string]any)
 	// Javascript
 	// const user = req.params.user;
@@ -122,8 +121,8 @@ func UserUserDelete(c echo.Context) error {
 // @Param passwordExpires body string false "Whether the password should expire"
 // @Produce json
 // @Success 200 "OK"
-// @Router /user/{user} [put]
-func UserUserPut(c echo.Context) error {
+// @Router /api/user/{user} [put]
+func (lconn *LDAP) UserUserPut(c echo.Context) error {
 	d := make(map[string]any)
 	// Javascript
 	// const user = req.params.user;
@@ -140,8 +139,8 @@ func UserUserPut(c echo.Context) error {
 // @Param user path string true "The user logon name"
 // @Produce json
 // @Success 200 "OK"
-// @Router /user/{user}/exists [get]
-func UserUserExistsGet(c echo.Context) error {
+// @Router /api/user/{user}/exists [get]
+func (lconn *LDAP) UserUserExistsGet(c echo.Context) error {
 	d := make(map[string]any)
 	// /user/{user}/exists:
 	// 	get:
@@ -177,8 +176,8 @@ func UserUserExistsGet(c echo.Context) error {
 // @Param group path string true "The group name"
 // @Produce json
 // @Success 200 "OK"
-// @Router /user/{user}/member-of/{group} [get]
-func UserUserMemberofGroupGet(c echo.Context) error {
+// @Router /api/user/{user}/member-of/{group} [get]
+func (lconn *LDAP) UserUserMemberofGroupGet(c echo.Context) error {
 	d := make(map[string]any)
 	// /user/{user}/member-of/{group}:
 	// 	get:
@@ -220,8 +219,8 @@ func UserUserMemberofGroupGet(c echo.Context) error {
 // @Param password body string true "The users password"
 // @Produce json
 // @Success 200 "OK"
-// @Router /user/{user}/authenticate [post]
-func UserUserAuthenticatePost(c echo.Context) error {
+// @Router /api/user/{user}/authenticate [post]
+func (lconn *LDAP) UserUserAuthenticatePost(c echo.Context) error {
 	d := make(map[string]any)
 	// /user/{user}/authenticate:
 	// 	post:
@@ -256,8 +255,8 @@ func UserUserAuthenticatePost(c echo.Context) error {
 // @Param password body string true "The users password"
 // @Produce json
 // @Success 200 "OK"
-// @Router /user/{user}/password [put]
-func UserUserPasswordPut(c echo.Context) error {
+// @Router /api/user/{user}/password [put]
+func (lconn *LDAP) UserUserPasswordPut(c echo.Context) error {
 	d := make(map[string]any)
 	// /user/{user}/password:
 	// 	put:
@@ -288,8 +287,8 @@ func UserUserPasswordPut(c echo.Context) error {
 // @Param user path string true "The user logon name"
 // @Produce json
 // @Success 200 "OK"
-// @Router /user/{user}/password-never-expires [put]
-func UserUserPasswordneverexpiresPut(c echo.Context) error {
+// @Router /api/user/{user}/password-never-expires [put]
+func (lconn *LDAP) UserUserPasswordneverexpiresPut(c echo.Context) error {
 	d := make(map[string]any)
 	// /user/{user}/password-never-expires:
 	// 	put:
@@ -316,8 +315,8 @@ func UserUserPasswordneverexpiresPut(c echo.Context) error {
 // @Param user path string true "The user logon name"
 // @Produce json
 // @Success 200 "OK"
-// @Router /user/{user}/password-expires [put]
-func UserUserPasswordExpiresPut(c echo.Context) error {
+// @Router /api/user/{user}/password-expires [put]
+func (lconn *LDAP) UserUserPasswordExpiresPut(c echo.Context) error {
 	d := make(map[string]any)
 	// /user/{user}/password-expires:
 	// 	put:
@@ -343,8 +342,8 @@ func UserUserPasswordExpiresPut(c echo.Context) error {
 // @Param user path string true "The user logon name"
 // @Produce json
 // @Success 200 "OK"
-// @Router /user/{user}/enable [put]
-func UserUserEnablePut(c echo.Context) error {
+// @Router /api/user/{user}/enable [put]
+func (lconn *LDAP) UserUserEnablePut(c echo.Context) error {
 	d := make(map[string]any)
 	// /user/{user}/enable:
 	// 	put:
@@ -370,8 +369,8 @@ func UserUserEnablePut(c echo.Context) error {
 // @Param user path string true "The user logon name"
 // @Produce json
 // @Success 200 "OK"
-// @Router /user/{user}/disable [put]
-func UserUserDisablePut(c echo.Context) error {
+// @Router /api/user/{user}/disable [put]
+func (lconn *LDAP) UserUserDisablePut(c echo.Context) error {
 	d := make(map[string]any)
 	// /user/{user}/disable:
 	// 	put:
@@ -398,8 +397,8 @@ func UserUserDisablePut(c echo.Context) error {
 // @Param location body string true "The new position, separated by /"
 // @Produce json
 // @Success 200 "OK"
-// @Router /user/{user}/move [put]
-func UserUserMovePut(c echo.Context) error {
+// @Router /api/user/{user}/move [put]
+func (lconn *LDAP) UserUserMovePut(c echo.Context) error {
 	d := make(map[string]any)
 	// /user/{user}/move:
 	// 	put:
@@ -427,8 +426,8 @@ func UserUserMovePut(c echo.Context) error {
 // @Param user path string true "The user logon name"
 // @Produce json
 // @Success 200 "OK"
-// @Router /user/{user}/unlock [put]
-func UserUserUnlockPut(c echo.Context) error {
+// @Router /api/user/{user}/unlock [put]
+func (lconn *LDAP) UserUserUnlockPut(c echo.Context) error {
 	d := make(map[string]any)
 	// /user/{user}/unlock:
 	// 	put:

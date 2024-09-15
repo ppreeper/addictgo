@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  font-size: 12px;
+}
+
+.nohover {
+  pointer-events: none;
+}

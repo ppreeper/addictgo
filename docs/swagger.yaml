@@ -12,7 +12,7 @@ info:
   title: AD Dict API
   version: "1.0"
 paths:
-  /all:
+  /api/all:
     get:
       consumes:
       - text/plain
@@ -48,7 +48,7 @@ paths:
       summary: Get all objects
       tags:
       - other
-  /find/{filter}:
+  /api/find/{filter}:
     get:
       consumes:
       - text/plain
@@ -67,7 +67,7 @@ paths:
       summary: Search Active Directory
       tags:
       - other
-  /group:
+  /api/group:
     get:
       consumes:
       - text/plain
@@ -126,7 +126,7 @@ paths:
       summary: Add a group
       tags:
       - group
-  /group/{group}:
+  /api/group/{group}:
     delete:
       consumes:
       - text/plain
@@ -185,7 +185,7 @@ paths:
       summary: Get a single group
       tags:
       - group
-  /group/{group}/exists:
+  /api/group/{group}/exists:
     get:
       consumes:
       - text/plain
@@ -204,7 +204,7 @@ paths:
       summary: Group exists
       tags:
       - group
-  /group/{group}/user/{user}:
+  /api/group/{group}/user/{user}:
     delete:
       consumes:
       - text/plain
@@ -251,7 +251,7 @@ paths:
       summary: Add user to group
       tags:
       - group
-  /other:
+  /api/other:
     get:
       description: Pulls all non-user/group Active Directory objects
       parameters:
@@ -285,7 +285,7 @@ paths:
       summary: Get all other objects
       tags:
       - other
-  /ou:
+  /api/ou:
     get:
       consumes:
       - text/plain
@@ -350,7 +350,7 @@ paths:
       summary: Add an OU
       tags:
       - ou
-  /ou/{ou}:
+  /api/ou/{ou}:
     delete:
       consumes:
       - text/plain
@@ -409,7 +409,7 @@ paths:
       summary: Get a single OU
       tags:
       - ou
-  /ou/{ou}/exists:
+  /api/ou/{ou}/exists:
     get:
       consumes:
       - text/plain
@@ -428,7 +428,7 @@ paths:
       summary: OU exists
       tags:
       - ou
-  /status:
+  /api/status:
     get:
       description: Gives the uptime and status of the API.
       produces:
@@ -439,7 +439,7 @@ paths:
       summary: Get API status
       tags:
       - other
-  /user:
+  /api/user:
     get:
       consumes:
       - text/plain
@@ -529,7 +529,7 @@ paths:
       summary: Add a user
       tags:
       - users
-  /user/{user}:
+  /api/user/{user}:
     delete:
       consumes:
       - text/plain
@@ -646,7 +646,7 @@ paths:
       summary: Update a user
       tags:
       - users
-  /user/{user}/authenticate:
+  /api/user/{user}/authenticate:
     post:
       consumes:
       - text/plain
@@ -671,7 +671,7 @@ paths:
       summary: Authenticate a user
       tags:
       - users
-  /user/{user}/disable:
+  /api/user/{user}/disable:
     put:
       consumes:
       - text/plain
@@ -690,7 +690,7 @@ paths:
       summary: Disable a user
       tags:
       - users
-  /user/{user}/enable:
+  /api/user/{user}/enable:
     put:
       consumes:
       - text/plain
@@ -709,7 +709,7 @@ paths:
       summary: Enable a user
       tags:
       - users
-  /user/{user}/exists:
+  /api/user/{user}/exists:
     get:
       consumes:
       - text/plain
@@ -728,7 +728,7 @@ paths:
       summary: User exists
       tags:
       - users
-  /user/{user}/member-of/{group}:
+  /api/user/{user}/member-of/{group}:
     get:
       consumes:
       - text/plain
@@ -752,7 +752,7 @@ paths:
       summary: User is a member of group
       tags:
       - users
-  /user/{user}/move:
+  /api/user/{user}/move:
     put:
       consumes:
       - text/plain
@@ -777,7 +777,7 @@ paths:
       summary: Move a user
       tags:
       - users
-  /user/{user}/password:
+  /api/user/{user}/password:
     put:
       consumes:
       - text/plain
@@ -802,7 +802,7 @@ paths:
       summary: Change a password
       tags:
       - users
-  /user/{user}/password-expires:
+  /api/user/{user}/password-expires:
     put:
       consumes:
       - text/plain
@@ -821,7 +821,7 @@ paths:
       summary: Set password expires
       tags:
       - users
-  /user/{user}/password-never-expires:
+  /api/user/{user}/password-never-expires:
     put:
       consumes:
       - text/plain
@@ -840,7 +840,7 @@ paths:
       summary: Set password never expires
       tags:
       - users
-  /user/{user}/unlock:
+  /api/user/{user}/unlock:
     put:
       consumes:
       - text/plain

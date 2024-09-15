@@ -1,9 +1,10 @@
-package ldap
+package api
 
 import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/go-ldap/ldap/v3"
 	"github.com/ppreeper/str"
@@ -20,12 +21,13 @@ func GetScope(bindUser string) (scope string) {
 
 // LDAP configuration stuct
 type LDAP struct {
-	URL      string
-	Username string
-	Password string
-	Scope    string
-	Port     string
-	Conn     *ldap.Conn
+	URL       string
+	Username  string
+	Password  string
+	Scope     string
+	Port      string
+	Conn      *ldap.Conn
+	StartTime time.Time
 }
 
 func (a *LDAP) HostPort() string {
@@ -149,18 +151,20 @@ func (a *LDAP) Search(filter string, args LDAPArgs) map[string]any {
 	for k, e := range sr.Entries {
 		if k >= start {
 			if k < end {
-				// fmt.Println(e)
-				// e.PrettyPrint(2)
-				// fmt.Println(len(e.Attributes))
 				if len(e.Attributes) > 0 {
 					m := make(map[string]any)
 					for _, attr := range e.Attributes {
 						if len(attr.Values) == 1 {
-							m[attr.Name] = attr.Values[0]
-							// dd = append(dd, m)
+							switch attr.Name {
+							case "objectGUID":
+								m[attr.Name] = fmt.Sprintf("%X", attr.Values[0])
+							case "objectSid":
+								m[attr.Name] = fmt.Sprintf("%X", attr.Values[0])
+							default:
+								m[attr.Name] = attr.Values[0]
+							}
 						} else if len(attr.Values) > 1 {
 							m[attr.Name] = attr.Values
-							// dd = append(dd, m)
 						}
 					}
 					dd = append(dd, m)

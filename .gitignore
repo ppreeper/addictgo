@@ -21,3 +21,13 @@
 
 # air
 tmp/
+build-errors.log
+
+# templ
+*_templ.go
+
+# node
+node_modules/
+
+# GO workspace
+go.work

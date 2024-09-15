@@ -1,0 +1,13 @@
+package pages
+
+import (
+	l "github.com/ppreeper/addictgo/web/layout"
+	c "github.com/ppreeper/addictgo/web/component"
+)
+
+templ Index() {
+	@l.Base("AD Dict", "bg-gray-800", "font-sans", "leading-normal", "tracking-normal") {
+		@c.Navbar()
+		@c.SideMenu()
+	}
+}

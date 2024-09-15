@@ -17,7 +17,7 @@
     "host": "localhost:3001",
     "basePath": "/",
     "paths": {
-        "/all": {
+        "/api/all": {
             "get": {
                 "description": "Pulls all Active Directory objects",
                 "consumes": [
@@ -71,7 +71,7 @@
                 }
             }
         },
-        "/find/{filter}": {
+        "/api/find/{filter}": {
             "get": {
                 "description": "Does a raw Active Directory search",
                 "consumes": [
@@ -100,7 +100,7 @@
                 }
             }
         },
-        "/group": {
+        "/api/group": {
             "get": {
                 "description": "Pulls all groups in Active Directory, with filters.",
                 "consumes": [
@@ -188,7 +188,7 @@
                 }
             }
         },
-        "/group/{group}": {
+        "/api/group/{group}": {
             "get": {
                 "description": "Pulls a single group",
                 "consumes": [
@@ -276,7 +276,7 @@
                 }
             }
         },
-        "/group/{group}/exists": {
+        "/api/group/{group}/exists": {
             "get": {
                 "description": "Returns whether a group exists or not",
                 "consumes": [
@@ -305,7 +305,7 @@
                 }
             }
         },
-        "/group/{group}/user/{user}": {
+        "/api/group/{group}/user/{user}": {
             "post": {
                 "description": "Adds a user to a group",
                 "consumes": [
@@ -375,7 +375,7 @@
                 }
             }
         },
-        "/other": {
+        "/api/other": {
             "get": {
                 "description": "Pulls all non-user/group Active Directory objects",
                 "produces": [
@@ -426,7 +426,7 @@
                 }
             }
         },
-        "/ou": {
+        "/api/ou": {
             "get": {
                 "description": "Pulls all Organization Units in Active Directory, with filters",
                 "consumes": [
@@ -525,7 +525,7 @@
                 }
             }
         },
-        "/ou/{ou}": {
+        "/api/ou/{ou}": {
             "get": {
                 "description": "Pulls a single OU",
                 "consumes": [
@@ -613,7 +613,7 @@
                 }
             }
         },
-        "/ou/{ou}/exists": {
+        "/api/ou/{ou}/exists": {
             "get": {
                 "description": "Returns whether a OU exists or not",
                 "consumes": [
@@ -642,7 +642,7 @@
                 }
             }
         },
-        "/status": {
+        "/api/status": {
             "get": {
                 "description": "Gives the uptime and status of the API.",
                 "produces": [
@@ -659,7 +659,7 @@
                 }
             }
         },
-        "/user": {
+        "/api/user": {
             "get": {
                 "description": "Pulls all users in Active Directory, with filters",
                 "consumes": [
@@ -798,7 +798,7 @@
                 }
             }
         },
-        "/user/{user}": {
+        "/api/user/{user}": {
             "get": {
                 "description": "Pulls a single user",
                 "consumes": [
@@ -977,7 +977,7 @@
                 }
             }
         },
-        "/user/{user}/authenticate": {
+        "/api/user/{user}/authenticate": {
             "post": {
                 "description": "Runs a username and password against AD",
                 "consumes": [
@@ -1015,7 +1015,7 @@
                 }
             }
         },
-        "/user/{user}/disable": {
+        "/api/user/{user}/disable": {
             "put": {
                 "description": "Disables the users account",
                 "consumes": [
@@ -1044,7 +1044,7 @@
                 }
             }
         },
-        "/user/{user}/enable": {
+        "/api/user/{user}/enable": {
             "put": {
                 "description": "Enables the users account",
                 "consumes": [
@@ -1073,7 +1073,7 @@
                 }
             }
         },
-        "/user/{user}/exists": {
+        "/api/user/{user}/exists": {
             "get": {
                 "description": "Returns whether a user exists or not",
                 "consumes": [
@@ -1102,7 +1102,7 @@
                 }
             }
         },
-        "/user/{user}/member-of/{group}": {
+        "/api/user/{user}/member-of/{group}": {
             "get": {
                 "description": "Returns whether a user is a member of a group or not",
                 "consumes": [
@@ -1138,7 +1138,7 @@
                 }
             }
         },
-        "/user/{user}/move": {
+        "/api/user/{user}/move": {
             "put": {
                 "description": "Moves a user to a new location relative to the directory root",
                 "consumes": [
@@ -1176,7 +1176,7 @@
                 }
             }
         },
-        "/user/{user}/password": {
+        "/api/user/{user}/password": {
             "put": {
                 "description": "Changes the users password",
                 "consumes": [
@@ -1214,7 +1214,7 @@
                 }
             }
         },
-        "/user/{user}/password-expires": {
+        "/api/user/{user}/password-expires": {
             "put": {
                 "description": "Set the password to eventually expire",
                 "consumes": [
@@ -1243,7 +1243,7 @@
                 }
             }
         },
-        "/user/{user}/password-never-expires": {
+        "/api/user/{user}/password-never-expires": {
             "put": {
                 "description": "Sets the password to never expire",
                 "consumes": [
@@ -1272,7 +1272,7 @@
                 }
             }
         },
-        "/user/{user}/unlock": {
+        "/api/user/{user}/unlock": {
             "put": {
                 "description": "Unlocks a user",
                 "consumes": [

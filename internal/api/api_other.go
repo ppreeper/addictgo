@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"fmt"
@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
-	"github.com/ppreeper/addictgo/ldap"
 )
 
 // @Summary Get all objects
@@ -20,10 +19,10 @@ import (
 // @Param _end query int false "Result Index to end to"
 // @Produce json
 // @Success 200 "OK"
-// @Router /all [get]
-func AllGet(c echo.Context) error {
+// @Router /api/all [get]
+func (lconn *LDAP) AllGet(c echo.Context) error {
 	d := make(map[string]any)
-	var args ldap.LDAPArgs
+	var args LDAPArgs
 
 	args.Fields = c.QueryParam("_fields")
 	args.Q = c.QueryParam("_q")
@@ -52,10 +51,10 @@ func AllGet(c echo.Context) error {
 // @Param filter path string true "Search filter"
 // @Produce json
 // @Success 200 "OK"
-// @Router /find/{filter} [get]
-func FindFilterGet(c echo.Context) error {
+// @Router /api/find/{filter} [get]
+func (lconn *LDAP) FindFilterGet(c echo.Context) error {
 	d := make(map[string]any)
-	var args ldap.LDAPArgs
+	var args LDAPArgs
 
 	// filter	Search filter, such as CN=da*
 	filter := c.QueryParam("filter")
@@ -79,10 +78,10 @@ func FindFilterGet(c echo.Context) error {
 // @Param _end query int false "Result Index to end to"
 // @Produce json
 // @Success 200 "OK"
-// @Router /other [get]
-func OtherGet(c echo.Context) error {
+// @Router /api/other [get]
+func (lconn *LDAP) OtherGet(c echo.Context) error {
 	d := make(map[string]any)
-	var args ldap.LDAPArgs
+	var args LDAPArgs
 
 	args.Fields = c.QueryParam("_fields")
 	args.Q = c.QueryParam("_q")
@@ -101,11 +100,11 @@ func OtherGet(c echo.Context) error {
 // @Tags other
 // @Produce json
 // @Success 200 "OK"
-// @Router /status [get]
-func StatusGet(c echo.Context) error {
+// @Router /api/status [get]
+func (lconn *LDAP) StatusGet(c echo.Context) error {
 	d := make(map[string]interface{})
 	d["online"] = true
-	elapsed := time.Since(startTime)
+	elapsed := time.Since(lconn.StartTime)
 	// d["uptime"] = fmt.Sprintf("%0.fH%2.fm%0.1fs", elapsed.Hours(), math.Mod(elapsed.Minutes(), 60.0), math.Mod(elapsed.Seconds(), 60.0))
 	d["uptime"] = fmtDuration(elapsed)
 	return c.JSON(http.StatusOK, d)
