@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/go-ldap/ldap/v3"
-	"github.com/ppreeper/pad"
+	"github.com/ppreeper/str"
 )
 
 // LDAP configuration stuct
@@ -171,5 +171,5 @@ func GetScope(bindUser string) (scope string) {
 	for _, v := range domain {
 		scope += fmt.Sprintf("dc=%s,", v)
 	}
-	return pad.LJustLen(scope, len(scope)-1)
+	return str.LJustLen(scope, len(scope)-1)
 }

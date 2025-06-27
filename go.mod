@@ -9,7 +9,7 @@ require (
 	github.com/go-ldap/ldap/v3 v3.4.11
 	github.com/gofiber/fiber/v2 v2.52.8
 	github.com/gofiber/swagger v1.1.1
-	github.com/ppreeper/pad v1.0.0
+	github.com/ppreeper/str v0.0.0-20240129034638-e87440b77a20
 	github.com/swaggo/swag v1.16.4
 )
 
