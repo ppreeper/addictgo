@@ -2,10 +2,9 @@ dev:
 	air
 
 swagger:
-	swag init --dir ./,./api
+	swag init --dir ./../api
 
 
 buildtemp:
-	swag init --dir ./,./api
+	swag init
 	go build -o ./tmp/main .
-
